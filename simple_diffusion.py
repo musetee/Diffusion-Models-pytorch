@@ -203,11 +203,12 @@ def sample_plot_image(model,IMG_SIZE,saved_img_folder,epoch,batch_i):
     # generate a noise image to test the model
     img = torch.randn((1, img_size[0], img_size[1], img_size[2]), device=device)
     num_images = 10
-    stepsize = int(T/num_images) # 30
+    stepsize = int(T/num_images) 
     img_samples = []
     sample_step=0
     for i in range(0,T)[::-1]: # means from T to 0, not including T  
-        t = torch.full((1,), i, device=device, dtype=torch.long) # torch.full is to create a tensor with the same value 1
+        # torch.full is to create a tensor of size(1,) with the same value i,  torch.full(size, fill_value, ....
+        t = torch.full((1,), i, device=device, dtype=torch.long) 
         img = sample_timestep(model, img, t)
         if i % stepsize == 0: # plot images every stepsize steps
             img_samples.append(img.cpu().detach().numpy())
@@ -329,10 +330,11 @@ class simpleDifftrainer():
                 t = torch.randint(0, T, (len_batch,), device=device).long() # the last batch is not full, only 4 images, so here should be matched
                 # forward diffusion
                 x_noisy, noise = forward_diffusion_sample(inputs, t, device=device) # the last batch is not full, only 4 images
-                # backward diffusion
+                
+                # backward diffusion ## problem!!!
                 noise_pred = model_Unet(x_noisy, t)
                 #loss=F.l1_loss(inputs, noise_pred)
-                loss=loss_fn(labels, noise_pred)
+                loss=loss_fn(noise, noise_pred)
                 loss.backward()
                 self.optimizer.step()
                 losses.append(loss.item())

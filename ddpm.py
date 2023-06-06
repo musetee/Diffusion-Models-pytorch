@@ -24,9 +24,11 @@ class Diffusion:
         self.alpha = 1. - self.beta
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
+    # return beta
     def prepare_noise_schedule(self):
         return torch.linspace(self.beta_start, self.beta_end, self.noise_steps)
 
+    # forward diffusion
     def noise_images(self, x, t):
         sqrt_alpha_hat = torch.sqrt(self.alpha_hat[t])[:, None, None, None]
         sqrt_one_minus_alpha_hat = torch.sqrt(1 - self.alpha_hat[t])[:, None, None, None]
@@ -59,7 +61,7 @@ class Diffusion:
 
 
 def train(args):
-    setup_logging(args.run_name)
+    #setup_logging(args.run_name)
     device = args.device
     dataloader = get_data(args)
     model = UNet().to(device)
