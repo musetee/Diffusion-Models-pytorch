@@ -263,11 +263,11 @@ def config_path(model_name):
 
 from torch.optim import Adam
 class simpleDifftrainer():
-    def __init__(self, learning_rate, 
+    def __init__(self, 
                  #num_channels, strides, 
                  device, 
                  model_name='diffusion'):
-        self.learning_rate = learning_rate
+        
         #self.num_channels = num_channels
         #self.strides = strides
         self.device=device
@@ -307,10 +307,12 @@ class simpleDifftrainer():
         axs[1].set_title('Corrupted data (-- amount increases -->)')
         axs[1].imshow(torchvision.utils.make_grid(noised_x)[0], cmap='Greys')
 
-    def train_diffusion(self, epoch_num=4,val_interval=1, batch_interval=10):
+    def train(self, train_loader, learning_rate, epoch_num=4,val_interval=1, batch_interval=10):
+
         device = self.device
         model_Unet=self.model
         model_Unet.to(device)
+        self.learning_rate = learning_rate
         loss_fn=nn.MSELoss()
         for epoch in range(epoch_num):
             print("-" * 10)
@@ -319,7 +321,7 @@ class simpleDifftrainer():
             step=0
             #loss=0
             losses = []
-            for batch in tqdm(self.train_loader):
+            for batch in tqdm(train_loader):
                 len_batch=len(batch["image"])
                 inputs, labels = batch["image"].to(device), batch["label"].to(device)
                 IMG_SIZE=batch["image"][0].shape
@@ -331,7 +333,7 @@ class simpleDifftrainer():
                 # backward diffusion
                 noise_pred = model_Unet(x_noisy, t)
                 #loss=F.l1_loss(inputs, noise_pred)
-                loss=loss_fn(inputs, noise_pred)
+                loss=loss_fn(labels, noise_pred)
                 loss.backward()
                 self.optimizer.step()
                 losses.append(loss.item())
