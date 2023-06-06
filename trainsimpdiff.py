@@ -1,10 +1,11 @@
 from simple_diffusion import simpleDifftrainer
 from my_dataset import myslicesloader
+import torch
 device='cuda' if torch.cuda.is_available() else 'cpu'
 # path to dataset
-dataset_path=''
+dataset_path='./datasets/pelvis'
 if __name__ == '__main__':
-    model=simpleDifftrainer()
+    model=simpleDifftrainer(device)
     train_volume_ds,_,train_loader,_,_ = myslicesloader(dataset_path,
                     normalize='zscore',
                     train_number=1,

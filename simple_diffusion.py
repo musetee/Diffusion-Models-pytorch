@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 import numpy as np
 from torch import nn
 import math
-from datetime import datetime
+import datetime
 
 def linear_beta_schedule(timesteps, start=0.0001, end=0.02):
     return torch.linspace(start, end, timesteps)
@@ -274,7 +274,6 @@ class simpleDifftrainer():
         #self.val_batch_size = val_batch_size
         #self.writer = writer
         self.model = SimpleUnet()
-        self.optimizer = Adam(self.model.parameters(), lr=self.learning_rate)
         
         my_paths=config_path(model_name)
         self.saved_logs_folder=my_paths[0]
@@ -308,11 +307,11 @@ class simpleDifftrainer():
         axs[1].imshow(torchvision.utils.make_grid(noised_x)[0], cmap='Greys')
 
     def train(self, train_loader, learning_rate, epoch_num=4,val_interval=1, batch_interval=10):
-
         device = self.device
         model_Unet=self.model
         model_Unet.to(device)
         self.learning_rate = learning_rate
+        self.optimizer = Adam(self.model.parameters(), lr=self.learning_rate)
         loss_fn=nn.MSELoss()
         for epoch in range(epoch_num):
             print("-" * 10)
