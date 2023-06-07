@@ -19,7 +19,7 @@ if __name__ == '__main__':
                     ifcheck_volume=False,
                     ifcheck_sclices=False,)
     model.train(train_loader, 
-                learning_rate=1e-3, 
-                epoch_num=4,
+                learning_rate=3e-3, 
+                epoch_num=50,
                 val_interval=1,
                 batch_interval=10)

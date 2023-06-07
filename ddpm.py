@@ -60,10 +60,26 @@ class Diffusion:
         return x
 
 
+from my_dataset import myslicesloader
 def train(args):
     #setup_logging(args.run_name)
     device = args.device
-    dataloader = get_data(args)
+    #dataloader = get_data(args)
+    dataset_path=args.dataset_path
+    train_volume_ds,_,train_loader,_,_ = myslicesloader(dataset_path,
+                    normalize='zscore',
+                    train_number=1,
+                    val_number=1,
+                    train_batch_size=8,
+                    val_batch_size=1,
+                    saved_name_train='./train_ds_2d.csv',
+                    saved_name_val='./val_ds_2d.csv',
+                    resized_size=(512,512,None),
+                    div_size=(16,16,None),
+                    ifcheck_volume=False,
+                    ifcheck_sclices=False,)
+    dataloader=train_loader
+    
     model = UNet().to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     mse = nn.MSELoss()
