@@ -79,19 +79,20 @@ def train(args):
                     ifcheck_volume=False,
                     ifcheck_sclices=False,)
     dataloader=train_loader
-    
-    model = UNet().to(device)
+    #l = len(dataloader)
+    l=1000 # only first test
+
+    model = UNet(c_in=1, c_out=1).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     mse = nn.MSELoss()
     diffusion = Diffusion(img_size=args.image_size, device=device)
     logger = SummaryWriter(os.path.join("runs", args.run_name))
-    l = len(dataloader)
-
+    
     for epoch in range(args.epochs):
         logging.info(f"Starting epoch {epoch}:")
         pbar = tqdm(dataloader)
-        for i, (images, _) in enumerate(pbar):
-            images = images.to(device)
+        for i, images in enumerate(pbar): #(images, _)
+            images = images["image"].to(device)
             t = diffusion.sample_timesteps(images.shape[0]).to(device)
             x_t, noise = diffusion.noise_images(images, t)
             predicted_noise = model(x_t, t)
@@ -114,10 +115,10 @@ def launch():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     args.run_name = "DDPM_Uncondtional"
-    args.epochs = 500
-    args.batch_size = 12
-    args.image_size = 64
-    args.dataset_path = r"C:\Users\dome\datasets\landscape_img_folder"
+    args.epochs = 1
+    args.batch_size = 4
+    args.image_size = 512
+    args.dataset_path = r"C:\Users\56991\Projects\Datasets\Task1\pelvis"
     args.device = "cuda"
     args.lr = 3e-4
     train(args)
