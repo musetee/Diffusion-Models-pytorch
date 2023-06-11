@@ -7,3 +7,4 @@ results/
 runs/
 alphabet
 *.pt
+logs/

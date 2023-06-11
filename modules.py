@@ -115,8 +115,8 @@ class Up(nn.Module):
         self.emb_layer = nn.Sequential(
             nn.SiLU(),
             nn.Linear(
-                emb_dim,
-                out_channels
+                emb_dim, # in features
+                out_channels # out features
             ),
         )
 
@@ -132,31 +132,38 @@ class UNet(nn.Module):
     def __init__(self, c_in=3, c_out=3, time_dim=256, remove_deep_conv=False):
         super().__init__()
         self.time_dim = time_dim
+        #ensrue time_dim is divisible by 8
+        assert time_dim % 8 == 0 
+        depth=256
+        depth_2 = int(depth/2) #256
+        depth_4 = int(depth/4) #128
+        depth_8 = int(depth/8) #64
+
         self.remove_deep_conv = remove_deep_conv
-        self.inc = DoubleConv(c_in, 64)
-        self.down1 = Down(64, 128)
-        self.sa1 = SelfAttention(128)
-        self.down2 = Down(128, 256)
-        self.sa2 = SelfAttention(256)
-        self.down3 = Down(256, 256)
-        self.sa3 = SelfAttention(256)
+        self.inc = DoubleConv(c_in, depth_8)
+        self.down1 = Down(depth_8, depth_4, emb_dim=time_dim)
+        self.sa1 = SelfAttention(depth_4)
+        self.down2 = Down(depth_4, depth_2, emb_dim=time_dim)
+        self.sa2 = SelfAttention(depth_2)
+        self.down3 = Down(depth_2, depth_2, emb_dim=time_dim)
+        self.sa3 = SelfAttention(depth_2)
 
 
         if remove_deep_conv:
-            self.bot1 = DoubleConv(256, 256)
-            self.bot3 = DoubleConv(256, 256)
+            self.bot1 = DoubleConv(depth_2, depth_2)
+            self.bot3 = DoubleConv(depth_2, depth_2)
         else:
-            self.bot1 = DoubleConv(256, 512)
-            self.bot2 = DoubleConv(512, 512)
-            self.bot3 = DoubleConv(512, 256)
+            self.bot1 = DoubleConv(depth_2, depth)
+            self.bot2 = DoubleConv(depth, depth)
+            self.bot3 = DoubleConv(depth, depth_2)
 
-        self.up1 = Up(512, 128)
-        self.sa4 = SelfAttention(128)
-        self.up2 = Up(256, 64)
-        self.sa5 = SelfAttention(64)
-        self.up3 = Up(128, 64)
-        self.sa6 = SelfAttention(64)
-        self.outc = nn.Conv2d(64, c_out, kernel_size=1)
+        self.up1 = Up(depth, depth_4, emb_dim=time_dim)
+        self.sa4 = SelfAttention(depth_4)
+        self.up2 = Up(depth_2, depth_8, emb_dim=time_dim)
+        self.sa5 = SelfAttention(depth_8)
+        self.up3 = Up(depth_4, depth_8, emb_dim=time_dim)
+        self.sa6 = SelfAttention(depth_8)
+        self.outc = nn.Conv2d(depth_8, c_out, kernel_size=1)
 
     def pos_encoding(self, t, channels):
         inv_freq = 1.0 / (
@@ -170,6 +177,8 @@ class UNet(nn.Module):
 
     def unet_forwad(self, x, t):
         x1 = self.inc(x)
+        #print(f'shape of x1 {x1.shape}')
+        #print(f'shape of t {t.shape}') 
         x2 = self.down1(x1, t)
         x2 = self.sa1(x2)
         x3 = self.down2(x2, t)

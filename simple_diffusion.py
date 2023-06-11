@@ -209,7 +209,8 @@ def sample_plot_image(model,IMG_SIZE,saved_img_folder,epoch,batch_i):
     for i in range(0,T)[::-1]: # means from T to 0, not including T  
         # torch.full is to create a tensor of size(1,) with the same value i,  torch.full(size, fill_value, ....
         t = torch.full((1,), i, device=device, dtype=torch.long) 
-        img = sample_timestep(model, img, t)
+        #img = sample_timestep(model, img, t)
+        img = model(img, t)
         if i % stepsize == 0: # plot images every stepsize steps
             img_samples.append(img.cpu().detach().numpy())
             sample_step+=1
@@ -334,7 +335,8 @@ class simpleDifftrainer():
                 # backward diffusion ## problem!!!
                 noise_pred = model_Unet(x_noisy, t)
                 #loss=F.l1_loss(inputs, noise_pred)
-                loss=loss_fn(noise, noise_pred)
+                #loss=loss_fn(noise, noise_pred)
+                loss = loss_fn(noise_pred, inputs)
                 loss.backward()
                 self.optimizer.step()
                 losses.append(loss.item())
@@ -342,4 +344,28 @@ class simpleDifftrainer():
                 if step % batch_interval == 0:
                     #print(f"Epoch {epoch+1} | step {step:03d} Loss: {loss.item()} ")
                     sample_plot_image(model_Unet,IMG_SIZE,self.saved_img_folder,epoch,step)
+
+from my_dataset import myslicesloader
+device='cuda' if torch.cuda.is_available() else 'cpu'
+# path to dataset
+dataset_path='./datasets/pelvis'
+if __name__ == '__main__':
+    model=simpleDifftrainer(device)
+    train_volume_ds,_,train_loader,_,_ = myslicesloader(dataset_path,
+                    normalize='zscore',
+                    train_number=1,
+                    val_number=1,
+                    train_batch_size=8,
+                    val_batch_size=1,
+                    saved_name_train='./train_ds_2d.csv',
+                    saved_name_val='./val_ds_2d.csv',
+                    resized_size=(512,512,None),
+                    div_size=(16,16,None),
+                    ifcheck_volume=False,
+                    ifcheck_sclices=False,)
+    model.train(train_loader, 
+                learning_rate=3e-3, 
+                epoch_num=50,
+                val_interval=1,
+                batch_interval=10)
    

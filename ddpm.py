@@ -13,12 +13,13 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s: %(message)s", level=log
 
 
 class Diffusion:
-    def __init__(self, noise_steps=1000, beta_start=1e-4, beta_end=0.02, img_size=256, device="cuda"):
+    def __init__(self, noise_steps=1000, beta_start=1e-4, beta_end=0.02, img_size=256, img_channel=1, device="cuda"):
         self.noise_steps = noise_steps
         self.beta_start = beta_start
         self.beta_end = beta_end
         self.img_size = img_size
         self.device = device
+        self.img_channel = img_channel
 
         self.beta = self.prepare_noise_schedule().to(device)
         self.alpha = 1. - self.beta
@@ -42,7 +43,7 @@ class Diffusion:
         logging.info(f"Sampling {n} new images....")
         model.eval()
         with torch.no_grad():
-            x = torch.randn((n, 3, self.img_size, self.img_size)).to(self.device)
+            x = torch.randn((n, self.img_channel, self.img_size, self.img_size)).to(self.device)
             for i in tqdm(reversed(range(1, self.noise_steps)), position=0):
                 t = (torch.ones(n) * i).long().to(self.device)
                 predicted_noise = model(x, t)
@@ -70,11 +71,11 @@ def train(args):
                     normalize='zscore',
                     train_number=1,
                     val_number=1,
-                    train_batch_size=8,
+                    train_batch_size=2,
                     val_batch_size=1,
                     saved_name_train='./train_ds_2d.csv',
                     saved_name_val='./val_ds_2d.csv',
-                    resized_size=(512,512,None),
+                    resized_size=(args.image_size, args.image_size, None),
                     div_size=(16,16,None),
                     ifcheck_volume=False,
                     ifcheck_sclices=False,)
@@ -82,10 +83,12 @@ def train(args):
     #l = len(dataloader)
     l=1000 # only first test
 
-    model = UNet(c_in=1, c_out=1).to(device)
+    model = UNet(c_in=1, c_out=1,time_dim=32).to(device)
+    # print parameter number 
+    print(f"Number of parameters: {sum(p.numel() for p in model.parameters())}")
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     mse = nn.MSELoss()
-    diffusion = Diffusion(img_size=args.image_size, device=device)
+    diffusion = Diffusion(noise_steps=args.noise_steps, img_size=args.image_size, device=device)
     logger = SummaryWriter(os.path.join("runs", args.run_name))
     
     for epoch in range(args.epochs):
@@ -116,11 +119,12 @@ def launch():
     args = parser.parse_args()
     args.run_name = "DDPM_Uncondtional"
     args.epochs = 1
-    args.batch_size = 4
-    args.image_size = 512
-    args.dataset_path = r"C:\Users\56991\Projects\Datasets\Task1\pelvis"
+    #args.batch_size = 8
+    args.image_size = 64
+    args.dataset_path = r"D:\Projects\data\Task1\pelvis" # C:\Users\56991\Projects\Datasets\Task1\pelvis
     args.device = "cuda"
     args.lr = 3e-4
+    args.noise_steps = 1000
     train(args)
 
 
