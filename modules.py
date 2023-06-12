@@ -36,10 +36,10 @@ class EMA:
 
 
 class SelfAttention(nn.Module):
-    def __init__(self, channels):
+    def __init__(self, channels,heads=2):
         super(SelfAttention, self).__init__()
         self.channels = channels        
-        self.mha = nn.MultiheadAttention(channels, 4, batch_first=True)
+        self.mha = nn.MultiheadAttention(channels, heads, batch_first=True)
         self.ln = nn.LayerNorm([channels])
         self.ff_self = nn.Sequential(
             nn.LayerNorm([channels]),
@@ -50,13 +50,13 @@ class SelfAttention(nn.Module):
 
     def forward(self, x):
         size = x.shape[-1]
-        x = x.view(-1, self.channels, size * size).swapaxes(1, 2)
-        x_ln = self.ln(x)
-        attention_value, _ = self.mha(x_ln, x_ln, x_ln)
-        attention_value = attention_value + x
-        attention_value = self.ff_self(attention_value) + attention_value
-        return attention_value.swapaxes(2, 1).view(-1, self.channels, size, size)
-
+        x = x.view(-1, self.channels, size * size).swapaxes(1, 2) # [B, H, W, C] -> [B, H*W, C]
+        x_ln = self.ln(x) # [B, H*W, C]
+        attention_value, _ = self.mha(x_ln, x_ln, x_ln) # [B, H*W, C]
+        attention_value = attention_value + x # [B, H*W, C]
+        attention_value = self.ff_self(attention_value) + attention_value # [B, H*W, C]
+        return attention_value.swapaxes(2, 1).view(-1, self.channels, size, size) # [B, C, H, W]
+ 
 
 class DoubleConv(nn.Module):
     def __init__(self, in_channels, out_channels, mid_channels=None, residual=False):
@@ -134,34 +134,34 @@ class UNet(nn.Module):
         self.time_dim = time_dim
         #ensrue time_dim is divisible by 8
         assert time_dim % 8 == 0 
-        depth=256
+        depth=64
         depth_2 = int(depth/2) #256
         depth_4 = int(depth/4) #128
         depth_8 = int(depth/8) #64
 
         self.remove_deep_conv = remove_deep_conv
-        self.inc = DoubleConv(c_in, depth_8)
-        self.down1 = Down(depth_8, depth_4, emb_dim=time_dim)
+        self.inc = DoubleConv(c_in, depth_8) # [B, depth_8, img_size, img_size]
+        self.down1 = Down(depth_8, depth_4, emb_dim=time_dim) # [B, depth_4, img_size/2, img_size/2]
         self.sa1 = SelfAttention(depth_4)
-        self.down2 = Down(depth_4, depth_2, emb_dim=time_dim)
+        self.down2 = Down(depth_4, depth_2, emb_dim=time_dim) # [B, depth_2, img_size/4, img_size/4]
         self.sa2 = SelfAttention(depth_2)
-        self.down3 = Down(depth_2, depth_2, emb_dim=time_dim)
+        self.down3 = Down(depth_2, depth_2, emb_dim=time_dim) # [B, depth_2, img_size/8, img_size/8]
         self.sa3 = SelfAttention(depth_2)
 
 
         if remove_deep_conv:
-            self.bot1 = DoubleConv(depth_2, depth_2)
-            self.bot3 = DoubleConv(depth_2, depth_2)
+            self.bot1 = DoubleConv(depth_2, depth_2) # [B, depth_2, img_size/8, img_size/8]
+            self.bot3 = DoubleConv(depth_2, depth_2) # [B, depth_2, img_size/8, img_size/8]
         else:
-            self.bot1 = DoubleConv(depth_2, depth)
-            self.bot2 = DoubleConv(depth, depth)
-            self.bot3 = DoubleConv(depth, depth_2)
+            self.bot1 = DoubleConv(depth_2, depth) # [B, depth, img_size/8, img_size/8]
+            self.bot2 = DoubleConv(depth, depth) # [B, depth, img_size/8, img_size/8]
+            self.bot3 = DoubleConv(depth, depth_2) # [B, depth_2, img_size/8, img_size/8]
 
-        self.up1 = Up(depth, depth_4, emb_dim=time_dim)
+        self.up1 = Up(depth, depth_4, emb_dim=time_dim) # [B, depth_4, img_size/4, img_size/4]
         self.sa4 = SelfAttention(depth_4)
-        self.up2 = Up(depth_2, depth_8, emb_dim=time_dim)
+        self.up2 = Up(depth_2, depth_8, emb_dim=time_dim) # [B, depth_8, img_size/2, img_size/2]
         self.sa5 = SelfAttention(depth_8)
-        self.up3 = Up(depth_4, depth_8, emb_dim=time_dim)
+        self.up3 = Up(depth_4, depth_8, emb_dim=time_dim) # [B, depth_8, img_size, img_size]
         self.sa6 = SelfAttention(depth_8)
         self.outc = nn.Conv2d(depth_8, c_out, kernel_size=1)
 
@@ -175,34 +175,34 @@ class UNet(nn.Module):
         pos_enc = torch.cat([pos_enc_a, pos_enc_b], dim=-1)
         return pos_enc
 
-    def unet_forwad(self, x, t):
-        x1 = self.inc(x)
-        #print(f'shape of x1 {x1.shape}')
+    def unet_forwad(self, x, t): # example based on depth=512, img_size=64
+        x1 = self.inc(x) # [B, depth_8, img_size, img_size] = [B, 64, 64, 64] 
+        #print(f'shape of x1 {x1.shape}') 
         #print(f'shape of t {t.shape}') 
-        x2 = self.down1(x1, t)
-        x2 = self.sa1(x2)
-        x3 = self.down2(x2, t)
+        x2 = self.down1(x1, t) # [B, depth_4, img_size/2, img_size/2] = [B, 128, 32, 32]
+        x2 = self.sa1(x2) # [B, 128, 32, 32]
+        x3 = self.down2(x2, t) # [B, depth_2, img_size/4, img_size/4]
         x3 = self.sa2(x3)
-        x4 = self.down3(x3, t)
+        x4 = self.down3(x3, t) # [B, depth_2, img_size/8, img_size/8]
         x4 = self.sa3(x4)
 
-        x4 = self.bot1(x4)
+        x4 = self.bot1(x4) # [B, depth, img_size/8, img_size/8]
         if not self.remove_deep_conv:
             x4 = self.bot2(x4)
-        x4 = self.bot3(x4)
+        x4 = self.bot3(x4) # [B, depth_2, img_size/8, img_size/8]
 
-        x = self.up1(x4, x3, t)
+        x = self.up1(x4, x3, t) # concat(up(x4), x3) -> [B, depth_4, img_size/4, img_size/4]
         x = self.sa4(x)
-        x = self.up2(x, x2, t)
-        x = self.sa5(x)
-        x = self.up3(x, x1, t)
+        x = self.up2(x, x2, t) # [B, depth_8, img_size/2, img_size/2]
+        x = self.sa5(x) 
+        x = self.up3(x, x1, t) # [B, depth_8, img_size, img_size]
         x = self.sa6(x)
-        output = self.outc(x)
+        output = self.outc(x) # [B, c_out, img_size, img_size] 
         return output
     
     def forward(self, x, t):
         t = t.unsqueeze(-1)
-        t = self.pos_encoding(t, self.time_dim)
+        t = self.pos_encoding(t, self.time_dim) # [B, time_dim]
         return self.unet_forwad(x, t)
 
 

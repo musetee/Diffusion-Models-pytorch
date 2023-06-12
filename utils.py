@@ -1,12 +1,11 @@
 import os, random
 from pathlib import Path
-from kaggle import api
 import torch
 import torchvision
 import torchvision.transforms as T
 import numpy as np
 from PIL import Image
-from fastdownload import FastDownload
+
 from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader
 
@@ -28,6 +27,7 @@ def set_seed(s, reproducible=False):
         torch.backends.cudnn.benchmark = False
 
 def untar_data(url, force_download=False, base='./datasets'):
+    from fastdownload import FastDownload
     d = FastDownload(base=base)
     return d.get(url, force=force_download, extract_key='data')
 
@@ -58,6 +58,7 @@ def get_kaggle_dataset(dataset_path, # Local path to download dataset to
                 unzip=True, # Should it unzip after downloading?
                 force=False # Should it overwrite or error if dataset_path exists?
                ):
+    from kaggle import api
     '''Downloads an existing dataset and metadata from kaggle'''
     if not force and Path(dataset_path).exists():
         return Path(dataset_path)

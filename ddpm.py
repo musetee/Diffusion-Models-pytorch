@@ -68,10 +68,10 @@ def train(args):
     #dataloader = get_data(args)
     dataset_path=args.dataset_path
     train_volume_ds,_,train_loader,_,_ = myslicesloader(dataset_path,
-                    normalize='zscore',
+                    normalize='none',
                     train_number=1,
                     val_number=1,
-                    train_batch_size=2,
+                    train_batch_size=args.batch_size,
                     val_batch_size=1,
                     saved_name_train='./train_ds_2d.csv',
                     saved_name_val='./val_ds_2d.csv',
@@ -83,7 +83,7 @@ def train(args):
     #l = len(dataloader)
     l=1000 # only first test
 
-    model = UNet(c_in=1, c_out=1,time_dim=32).to(device)
+    model = UNet(c_in=1, c_out=1,time_dim=args.time_dim).to(device)
     # print parameter number 
     print(f"Number of parameters: {sum(p.numel() for p in model.parameters())}")
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
@@ -119,11 +119,12 @@ def launch():
     args = parser.parse_args()
     args.run_name = "DDPM_Uncondtional"
     args.epochs = 1
-    #args.batch_size = 8
-    args.image_size = 64
-    args.dataset_path = r"D:\Projects\data\Task1\pelvis" # C:\Users\56991\Projects\Datasets\Task1\pelvis
-    args.device = "cuda"
+    args.batch_size = 1
+    args.image_size = 256
+    args.dataset_path = r"F:\yang_Projects\Datasets\Task1\pelvis" # C:\Users\56991\Projects\Datasets\Task1\pelvis D:\Projects\data\Task1\pelvis
+    args.device = "cuda:1"
     args.lr = 3e-4
+    args.time_dim = 32
     args.noise_steps = 1000
     train(args)
 
