@@ -65,12 +65,13 @@ class Diffusion:
     def sample_timesteps(self, n):
         return torch.randint(low=1, high=self.noise_steps, size=(n,))
 
-    def sample(self, model, n):
+    def sample(self, model, n, epoch, save_img_folder):
         logging.info(f"Sampling {n} new images....")
         model.eval()
+        img_samples = []
         with torch.no_grad():
             x = torch.randn((n, self.img_channel, self.img_size, self.img_size)).to(self.device)
-            for i in tqdm(reversed(range(1, self.noise_steps)), position=0):
+            for i in tqdm(reversed(range(1, self.noise_steps+1)), position=0):
                 t = (torch.ones(n) * i).long().to(self.device)
                 predicted_noise = model(x, t)
                 alpha = self.alpha[t][:, None, None, None]
@@ -81,9 +82,34 @@ class Diffusion:
                 else:
                     noise = torch.zeros_like(x)
                 x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat))) * predicted_noise) + torch.sqrt(beta) * noise
+                if i % 100 == 0:
+                    img = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
+                    img = (x * 255).type(torch.uint8)
+                    img_samples.append(img.cpu().detach().numpy())
+
         #model.train() 
         x = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
         x = (x * 255).type(torch.uint8)
+
+        num_images = len(img_samples)
+        # after all the sampling steps (10 steps), save the images
+        titles = [i for i in range(0,num_images)]
+        fig,axs=plt.subplots(1, int(num_images), figsize=(20,2))
+        cnt = 0
+        for j in range(num_images):
+            #print(gen_imgs[cnt].shape)
+            axs[j].imshow(img_samples[cnt].squeeze(), cmap='gray') # show the process of generating images from left to right
+            axs[j].set_title(titles[j])
+            axs[j].axis('off')
+            cnt += 1
+        os.makedirs(save_img_folder,exist_ok=True)
+        saved_name=f"{epoch}.jpg"
+        fig.savefig(os.path.join(save_img_folder,saved_name))
+        #plt.show()   
+        plt.close(fig) 
+
+        saved_name_final=f"{epoch}_final.jpg"  
+        save_images(x, os.path.join(save_img_folder,saved_name_final))
         return x
 
 
@@ -118,7 +144,6 @@ def train(args):
     logger = SummaryWriter(os.path.join("runs", args.run_name))
     model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
 
-    
     for continue_epoch in range(args.epochs):
         epoch = continue_epoch + init_epoch + 1
         logging.info(f"Starting epoch {epoch}:")
@@ -140,12 +165,48 @@ def train(args):
             logger.add_scalar("MSE", loss.item(), global_step=epoch * l + i)
 
         if epoch % args.sample_interval == 0:
-            sampled_images = diffusion.sample(model, n=images.shape[0])
-            save_images(sampled_images, os.path.join("results", args.run_name, f"{epoch}.jpg"))
+            save_img_folder = os.path.join("results", args.run_name)
+            sampled_images = diffusion.sample(model, n=images.shape[0], epoch=epoch, save_img_folder=save_img_folder)
+            
+            
         torch.save({'epoch': epoch,
             'model': model.state_dict(),
             'opt': optimizer.state_dict()}, 
             os.path.join("models", args.run_name, f"ckpt{epoch}.pt"))
+
+def inference(args):
+    #setup_logging(args.run_name)
+    device = args.device
+    #dataloader = get_data(args)
+    dataset_path=args.dataset_path
+    train_volume_ds,_,train_loader,_,_ = myslicesloader(dataset_path,
+                    normalize='none',
+                    train_number=args.train_number,
+                    val_number=1,
+                    train_batch_size=args.batch_size,
+                    val_batch_size=1,
+                    saved_name_train='./train_ds_2d.csv',
+                    saved_name_val='./val_ds_2d.csv',
+                    resized_size=(args.image_size, args.image_size, None),
+                    div_size=(16,16,None),
+                    ifcheck_volume=False,
+                    ifcheck_sclices=False,)
+    dataloader=train_loader
+    #l = len(dataloader)
+    l=1000 # only first test
+
+    model = UNet(c_in=1, c_out=1,time_dim=args.time_dim, depth=args.UNet_depth).to(device)
+    optimizer = optim.AdamW(model.parameters(), lr=args.lr)
+    diffusion = Diffusion(noise_steps=args.noise_steps, img_size=args.image_size, device=device)
+    model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
+
+    epoch = 'test'
+    pbar = tqdm(dataloader)  
+    for i, images in enumerate(pbar): #(images, _)
+        images = images["image"].to(device)
+        save_img_folder = os.path.join("results", args.run_name)
+        sampled_images = diffusion.sample(model, n=images.shape[0], epoch=epoch, save_img_folder=save_img_folder)
+
 
 def launch():
     import argparse
@@ -163,23 +224,11 @@ def launch():
     args.device = "cuda:1"
     args.lr = 5e-3
     args.noise_steps = 1000
-    args.pretrained_path = './models\DDPM_Uncondtional\ckpt149.pt'
+    args.pretrained_path = 'F:\yang_Projects\Diffusion-Models-pytorch/models/DDPM_Uncondtional\ckpt191.pt'
     os.makedirs('./results/DDPM_Uncondtional',exist_ok=True)
     os.makedirs('./models/DDPM_Uncondtional',exist_ok=True)
-    train(args)
-
+    #train(args)
+    inference(args)
 
 if __name__ == '__main__':
     launch()
-    # device = "cuda"
-    # model = UNet().to(device)
-    # ckpt = torch.load("./working/orig/ckpt.pt")
-    # model.load_state_dict(ckpt)
-    # diffusion = Diffusion(img_size=64, device=device)
-    # x = diffusion.sample(model, 8)
-    # print(x.shape)
-    # plt.figure(figsize=(32, 32))
-    # plt.imshow(torch.cat([
-    #     torch.cat([i for i in x.cpu()], dim=-1),
-    # ], dim=-2).permute(1, 2, 0).cpu())
-    # plt.show()

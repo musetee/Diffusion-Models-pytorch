@@ -38,7 +38,6 @@ class Diffusion:
         self.device = device
         self.c_in = c_in
         self.num_classes = num_classes
-
     def prepare_noise_schedule(self):
         return torch.linspace(self.beta_start, self.beta_end, self.noise_steps)
     
@@ -60,7 +59,7 @@ class Diffusion:
         model.eval()
         with torch.inference_mode():
             x = torch.randn((n, self.c_in, self.img_size, self.img_size)).to(self.device)
-            for i in progress_bar(reversed(range(1, self.noise_steps)), total=self.noise_steps-1, leave=False):
+            for i in progress_bar(reversed(range(1, self.noise_steps+1)), total=self.noise_steps-1, leave=False):
                 t = (torch.ones(n) * i).long().to(self.device)
                 predicted_noise = model(x, t, labels)
                 if cfg_scale > 0:
@@ -113,13 +112,11 @@ class Diffusion:
         "Log images to wandb and save them to disk"
         labels = torch.arange(self.num_classes).long().to(self.device)
         sampled_images = self.sample(use_ema=False, labels=labels)
-        logging.info(f"Sampling images....")
         wandb.log({"sampled_images":     [wandb.Image(img.permute(1,2,0).squeeze().cpu().numpy()) for img in sampled_images]})
 
         # EMA model sampling
         ema_sampled_images = self.sample(use_ema=True, labels=labels)
-        plot_images(sampled_images)  #to display on jupyter if available
-        logging.info(f"Sampling ema images....")
+        #plot_images(sampled_images)  #to display on jupyter if available
         wandb.log({"ema_sampled_images": [wandb.Image(img.permute(1,2,0).squeeze().cpu().numpy()) for img in ema_sampled_images]})
 
     def load(self, model_cpkt_path, model_ckpt="ckpt.pt", ema_model_ckpt="ema_ckpt.pt"):
@@ -128,9 +125,9 @@ class Diffusion:
 
     def save_model(self, run_name, epoch=-1):
         logging.info(f"Save model locally and on wandb")
-        torch.save(self.model.state_dict(), os.path.join("./models", run_name, f"ckpt.pt"))
-        torch.save(self.ema_model.state_dict(), os.path.join("./models", run_name, f"ema_ckpt.pt"))
-        torch.save(self.optimizer.state_dict(), os.path.join("./models", run_name, f"optim.pt"))
+        torch.save(self.model.state_dict(), os.path.join("./models", run_name, f"ckpt{epoch}.pt"))
+        torch.save(self.ema_model.state_dict(), os.path.join("./models", run_name, f"ema_ckpt{epoch}.pt"))
+        torch.save(self.optimizer.state_dict(), os.path.join("./models", run_name, f"optim{epoch}.pt"))
         at = wandb.Artifact("model", type="model", description="Model weights for DDPM conditional", metadata={"epoch": epoch})
         at.add_dir(os.path.join("models", run_name))
         wandb.log_artifact(at)
@@ -147,20 +144,23 @@ class Diffusion:
 
     def fit(self, args):
         for epoch in progress_bar(range(args.epochs), total=args.epochs, leave=False):
-            logging.info(f"Starting epoch {epoch}:")
+            current_epoch = epoch + 1
+            logging.info(f"Starting epoch {current_epoch}:")
             _  = self.one_epoch(train=True)
             
             ## validation
             if args.do_validation:
+                logging.info(f"Starting validation...")
                 avg_loss = self.one_epoch(train=False)
                 wandb.log({"val_mse": avg_loss})
             
             # log predicitons
-            if epoch % args.log_every_epoch == 0:
+            if current_epoch % args.log_every_epoch == 0:
+                logging.info(f"Logging images...")
                 self.log_images()
 
-        # save model
-        self.save_model(run_name=args.run_name, epoch=epoch)
+            # save model
+            self.save_model(run_name=args.run_name, epoch=epoch)
 
 
 
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     slice_size = 1,
     do_validation = True,
     fp16 = True,
-    log_every_epoch = 10,
+    log_every_epoch = 5,
     num_workers=10,
     lr = 5e-3)
     parse_args(config)
