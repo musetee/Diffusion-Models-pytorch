@@ -11,6 +11,32 @@ from torch.utils.tensorboard import SummaryWriter
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s: %(message)s", level=logging.INFO, datefmt="%I:%M:%S")
 
+def weights_init(m):
+    if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+        torch.nn.init.normal_(m.weight, 0.0, 0.02)
+    if isinstance(m, nn.BatchNorm2d):
+        torch.nn.init.normal_(m.weight, 0.0, 0.02)
+        torch.nn.init.constant_(m.bias, 0)
+
+def load_pretrained_model(model, opt, pretrained_path=None):
+    if pretrained_path is not None:
+        latest_ckpt=pretrained_path
+        loaded_state = torch.load(latest_ckpt)
+        print(f'use pretrained model: {latest_ckpt}') 
+        if 'epoch' in loaded_state:
+            init_epoch=loaded_state["epoch"] # load or manually set
+            print(f'continue training from epoch {init_epoch}') 
+            #init_epoch = int(input('Enter epoch number: '))
+        else:
+            print('no epoch information in the checkpoint file')
+            init_epoch = int(input('Enter epoch number: '))
+        model.load_state_dict(loaded_state["model"]) #
+        opt.load_state_dict(loaded_state["opt"])
+    else:
+        init_epoch=0
+        model = model.apply(weights_init)
+        print(f'start new training') 
+    return model, opt, init_epoch
 
 class Diffusion:
     def __init__(self, noise_steps=1000, beta_start=1e-4, beta_end=0.02, img_size=256, img_channel=1, device="cuda"):
@@ -31,7 +57,7 @@ class Diffusion:
 
     # forward diffusion
     def noise_images(self, x, t):
-        sqrt_alpha_hat = torch.sqrt(self.alpha_hat[t])[:, None, None, None]
+        sqrt_alpha_hat = torch.sqrt(self.alpha_hat[t])[:, None, None, None] # [:, None, None, None] add 4 dims
         sqrt_one_minus_alpha_hat = torch.sqrt(1 - self.alpha_hat[t])[:, None, None, None]
         Ɛ = torch.randn_like(x)
         return sqrt_alpha_hat * x + sqrt_one_minus_alpha_hat * Ɛ, Ɛ
@@ -55,8 +81,8 @@ class Diffusion:
                 else:
                     noise = torch.zeros_like(x)
                 x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat))) * predicted_noise) + torch.sqrt(beta) * noise
-        model.train()
-        x = (x.clamp(-1, 1) + 1) / 2
+        #model.train() 
+        x = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
         x = (x * 255).type(torch.uint8)
         return x
 
@@ -69,7 +95,7 @@ def train(args):
     dataset_path=args.dataset_path
     train_volume_ds,_,train_loader,_,_ = myslicesloader(dataset_path,
                     normalize='none',
-                    train_number=1,
+                    train_number=args.train_number,
                     val_number=1,
                     train_batch_size=args.batch_size,
                     val_batch_size=1,
@@ -83,21 +109,26 @@ def train(args):
     #l = len(dataloader)
     l=1000 # only first test
 
-    model = UNet(c_in=1, c_out=1,time_dim=args.time_dim).to(device)
+    model = UNet(c_in=1, c_out=1,time_dim=args.time_dim, depth=args.UNet_depth).to(device)
     # print parameter number 
     print(f"Number of parameters: {sum(p.numel() for p in model.parameters())}")
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     mse = nn.MSELoss()
     diffusion = Diffusion(noise_steps=args.noise_steps, img_size=args.image_size, device=device)
     logger = SummaryWriter(os.path.join("runs", args.run_name))
+    model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
+
     
-    for epoch in range(args.epochs):
+    for continue_epoch in range(args.epochs):
+        epoch = continue_epoch + init_epoch + 1
         logging.info(f"Starting epoch {epoch}:")
         pbar = tqdm(dataloader)
+        
         for i, images in enumerate(pbar): #(images, _)
             images = images["image"].to(device)
             t = diffusion.sample_timesteps(images.shape[0]).to(device)
             x_t, noise = diffusion.noise_images(images, t)
+            model.train() 
             predicted_noise = model(x_t, t)
             loss = mse(noise, predicted_noise)
 
@@ -108,24 +139,33 @@ def train(args):
             pbar.set_postfix(MSE=loss.item())
             logger.add_scalar("MSE", loss.item(), global_step=epoch * l + i)
 
-        sampled_images = diffusion.sample(model, n=images.shape[0])
-        save_images(sampled_images, os.path.join("results", args.run_name, f"{epoch}.jpg"))
-        torch.save(model.state_dict(), os.path.join("models", args.run_name, f"ckpt.pt"))
-
+        if epoch % args.sample_interval == 0:
+            sampled_images = diffusion.sample(model, n=images.shape[0])
+            save_images(sampled_images, os.path.join("results", args.run_name, f"{epoch}.jpg"))
+        torch.save({'epoch': epoch,
+            'model': model.state_dict(),
+            'opt': optimizer.state_dict()}, 
+            os.path.join("models", args.run_name, f"ckpt{epoch}.pt"))
 
 def launch():
     import argparse
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     args.run_name = "DDPM_Uncondtional"
-    args.epochs = 1
+    args.epochs = 1000
+    args.train_number = 20
     args.batch_size = 1
-    args.image_size = 256
+    args.sample_interval = 10
+    args.image_size = 512
+    args.time_dim = 32
+    args.UNet_depth = 128
     args.dataset_path = r"F:\yang_Projects\Datasets\Task1\pelvis" # C:\Users\56991\Projects\Datasets\Task1\pelvis D:\Projects\data\Task1\pelvis
     args.device = "cuda:1"
-    args.lr = 3e-4
-    args.time_dim = 32
+    args.lr = 5e-3
     args.noise_steps = 1000
+    args.pretrained_path = './models\DDPM_Uncondtional\ckpt149.pt'
+    os.makedirs('./results/DDPM_Uncondtional',exist_ok=True)
+    os.makedirs('./models/DDPM_Uncondtional',exist_ok=True)
     train(args)
 
 

@@ -36,7 +36,7 @@ class EMA:
 
 
 class SelfAttention(nn.Module):
-    def __init__(self, channels,heads=2):
+    def __init__(self, channels, heads=2):
         super(SelfAttention, self).__init__()
         self.channels = channels        
         self.mha = nn.MultiheadAttention(channels, heads, batch_first=True)
@@ -129,12 +129,12 @@ class Up(nn.Module):
 
 
 class UNet(nn.Module):
-    def __init__(self, c_in=3, c_out=3, time_dim=256, remove_deep_conv=False):
+    def __init__(self, c_in=3, c_out=3, time_dim=256, depth=64, remove_deep_conv=False):
         super().__init__()
         self.time_dim = time_dim
         #ensrue time_dim is divisible by 8
         assert time_dim % 8 == 0 
-        depth=64
+        #depth=64
         depth_2 = int(depth/2) #256
         depth_4 = int(depth/4) #128
         depth_8 = int(depth/8) #64
@@ -175,15 +175,15 @@ class UNet(nn.Module):
         pos_enc = torch.cat([pos_enc_a, pos_enc_b], dim=-1)
         return pos_enc
 
-    def unet_forwad(self, x, t): # example based on depth=512, img_size=64
-        x1 = self.inc(x) # [B, depth_8, img_size, img_size] = [B, 64, 64, 64] 
+    def unet_forwad(self, x, t): # example based on depth=64, img_size=512
+        x1 = self.inc(x) # [B, depth_8, img_size, img_size] = torch.Size([1, 8, 512, 512])
         #print(f'shape of x1 {x1.shape}') 
         #print(f'shape of t {t.shape}') 
-        x2 = self.down1(x1, t) # [B, depth_4, img_size/2, img_size/2] = [B, 128, 32, 32]
-        x2 = self.sa1(x2) # [B, 128, 32, 32]
-        x3 = self.down2(x2, t) # [B, depth_2, img_size/4, img_size/4]
-        x3 = self.sa2(x3)
-        x4 = self.down3(x3, t) # [B, depth_2, img_size/8, img_size/8]
+        x2 = self.down1(x1, t) # [B, depth_4, img_size/2, img_size/2] = torch.Size([1, 16, 256, 256])
+        #x2 = self.sa1(x2) # [B, 128, 32, 32]
+        x3 = self.down2(x2, t) # [B, depth_2, img_size/4, img_size/4] = torch.Size([1, 32, 128, 128])
+        #x3 = self.sa2(x3)
+        x4 = self.down3(x3, t) # [B, depth_2, img_size/8, img_size/8] = torch.Size([1, 32, 64, 64])
         x4 = self.sa3(x4)
 
         x4 = self.bot1(x4) # [B, depth, img_size/8, img_size/8]
@@ -194,9 +194,9 @@ class UNet(nn.Module):
         x = self.up1(x4, x3, t) # concat(up(x4), x3) -> [B, depth_4, img_size/4, img_size/4]
         x = self.sa4(x)
         x = self.up2(x, x2, t) # [B, depth_8, img_size/2, img_size/2]
-        x = self.sa5(x) 
+        #x = self.sa5(x) 
         x = self.up3(x, x1, t) # [B, depth_8, img_size, img_size]
-        x = self.sa6(x)
+        #x = self.sa6(x)
         output = self.outc(x) # [B, c_out, img_size, img_size] 
         return output
     

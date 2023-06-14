@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 class SelfAttention(nn.Module):
-    def __init__(self, channels):
+    def __init__(self, channels, heads):
         super(SelfAttention, self).__init__()
         self.channels = channels        
-        self.mha = nn.MultiheadAttention(channels, 2, batch_first=True)
+        self.mha = nn.MultiheadAttention(channels, heads, batch_first=True)
         self.ln = nn.LayerNorm([channels])
         self.ff_self = nn.Sequential(
             nn.LayerNorm([channels]),
@@ -21,14 +21,25 @@ class SelfAttention(nn.Module):
         attention_value = attention_value + x # [B, H*W, C]
         attention_value = self.ff_self(attention_value) + attention_value # [B, H*W, C]
         return attention_value.swapaxes(2, 1).view(-1, self.channels, size, size) # [B, C, H, W]
+    
+import subprocess as sp
+import os
+def get_gpu_memory():
+    command = "nvidia-smi --query-gpu=memory.free --format=csv"
+    memory_free_info = sp.check_output(command.split()).decode('ascii').split('\n')[:-1][1:]
+    memory_free_values = [int(x.split()[0]) for i, x in enumerate(memory_free_info)]
+    return memory_free_values
 
 if __name__ == "__main__":
     channels = 8
-    img_size = 128
-    device = 'cuda:0'
+    img_size = 256
+    heads = 1
+    device = 'cuda:1'
     x = torch.randn((1, channels, img_size, img_size)).to(device)
-    model_sa = SelfAttention(channels).to(device)
+    model_sa = SelfAttention(channels, heads).to(device)
     x_sa = model_sa(x)
+    print(f"attention heads: {heads}")
+    print(f"using gpu memory: {get_gpu_memory()}")
     print(x.shape)
     print(x_sa.shape)
     #print(model(x))
