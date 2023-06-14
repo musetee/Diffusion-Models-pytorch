@@ -82,10 +82,12 @@ class Diffusion:
                 else:
                     noise = torch.zeros_like(x)
                 x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat))) * predicted_noise) + torch.sqrt(beta) * noise
+                
                 if i % 100 == 0:
-                    img = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
-                    img = (x * 255).type(torch.uint8)
-                    img_samples.append(img.cpu().detach().numpy())
+                    #img = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
+                    #img = (img * 255).type(torch.uint8)
+                    img=x
+                    img_samples.append(img.detach().cpu().numpy())
 
         #model.train() 
         x = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
@@ -227,6 +229,9 @@ def launch():
     args.pretrained_path = 'F:\yang_Projects\Diffusion-Models-pytorch/models/DDPM_Uncondtional\ckpt191.pt'
     os.makedirs('./results/DDPM_Uncondtional',exist_ok=True)
     os.makedirs('./models/DDPM_Uncondtional',exist_ok=True)
+    GPU_ID = 1
+    device = torch.device(f'cuda:{GPU_ID}' if torch.cuda.is_available() else 'cpu') # 0=TitanXP, 1=P5000
+    print(torch.cuda.get_device_name(GPU_ID))
     #train(args)
     inference(args)
 
