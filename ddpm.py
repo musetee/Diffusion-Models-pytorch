@@ -71,7 +71,7 @@ class Diffusion:
         img_samples = []
         with torch.no_grad():
             x = torch.randn((n, self.img_channel, self.img_size, self.img_size)).to(self.device)
-            for i in tqdm(reversed(range(1, self.noise_steps+1)), position=0):
+            for i in tqdm(reversed(range(1, self.noise_steps)), position=0):
                 t = (torch.ones(n) * i).long().to(self.device)
                 predicted_noise = model(x, t)
                 alpha = self.alpha[t][:, None, None, None]
@@ -88,7 +88,7 @@ class Diffusion:
                     #img = (img * 255).type(torch.uint8)
                     img=x
                     img_samples.append(img.detach().cpu().numpy())
-
+                
         #model.train() 
         x = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
         x = (x * 255).type(torch.uint8)
@@ -168,8 +168,7 @@ def train(args):
 
         if epoch % args.sample_interval == 0:
             save_img_folder = os.path.join("results", args.run_name)
-            sampled_images = diffusion.sample(model, n=images.shape[0], epoch=epoch, save_img_folder=save_img_folder)
-            
+            sampled_images = diffusion.sample(model, n=images.shape[0], epoch=epoch, save_img_folder=save_img_folder)            
             
         torch.save({'epoch': epoch,
             'model': model.state_dict(),
@@ -179,21 +178,7 @@ def train(args):
 def inference(args):
     #setup_logging(args.run_name)
     device = args.device
-    #dataloader = get_data(args)
-    dataset_path=args.dataset_path
-    train_volume_ds,_,train_loader,_,_ = myslicesloader(dataset_path,
-                    normalize='none',
-                    train_number=args.train_number,
-                    val_number=1,
-                    train_batch_size=args.batch_size,
-                    val_batch_size=1,
-                    saved_name_train='./train_ds_2d.csv',
-                    saved_name_val='./val_ds_2d.csv',
-                    resized_size=(args.image_size, args.image_size, None),
-                    div_size=(16,16,None),
-                    ifcheck_volume=False,
-                    ifcheck_sclices=False,)
-    dataloader=train_loader
+
     #l = len(dataloader)
     l=1000 # only first test
 
@@ -203,11 +188,10 @@ def inference(args):
     model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
 
     epoch = 'test'
-    pbar = tqdm(dataloader)  
-    for i, images in enumerate(pbar): #(images, _)
-        images = images["image"].to(device)
-        save_img_folder = os.path.join("results", args.run_name)
-        sampled_images = diffusion.sample(model, n=images.shape[0], epoch=epoch, save_img_folder=save_img_folder)
+
+    n=1 # sample number
+    save_img_folder = os.path.join("results", args.run_name)
+    sampled_images = diffusion.sample(model, n=n, epoch=epoch, save_img_folder=save_img_folder)
 
 
 def launch():
@@ -230,10 +214,10 @@ def launch():
     os.makedirs('./results/DDPM_Uncondtional',exist_ok=True)
     os.makedirs('./models/DDPM_Uncondtional',exist_ok=True)
     GPU_ID = 1
-    device = torch.device(f'cuda:{GPU_ID}' if torch.cuda.is_available() else 'cpu') # 0=TitanXP, 1=P5000
+    #device = torch.device(f'cuda:{GPU_ID}' if torch.cuda.is_available() else 'cpu') # 0=TitanXP, 1=P5000
     print(torch.cuda.get_device_name(GPU_ID))
-    #train(args)
-    inference(args)
+    train(args)
+    #inference(args)
 
 if __name__ == '__main__':
     launch()
