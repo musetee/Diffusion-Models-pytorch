@@ -64,8 +64,34 @@ class Diffusion:
 
     def sample_timesteps(self, n):
         return torch.randint(low=1, high=self.noise_steps, size=(n,))
-
+    
     def sample(self, model, n, epoch, save_img_folder):
+        logging.info(f"Sampling {n} new images....")
+        model.eval()
+        img_samples = []
+        with torch.no_grad():
+            x = torch.randn((n, self.img_channel, self.img_size, self.img_size)).to(self.device)
+            for i in tqdm(reversed(range(1, self.noise_steps)), position=0):
+                t = (torch.ones(n) * i).long().to(self.device)
+                predicted_noise = model(x, t)
+                alpha = self.alpha[t][:, None, None, None]
+                alpha_hat = self.alpha_hat[t][:, None, None, None]
+                beta = self.beta[t][:, None, None, None]
+                if i > 1:
+                    noise = torch.randn_like(x)
+                else:
+                    noise = torch.zeros_like(x)
+                x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat))) * predicted_noise) + torch.sqrt(beta) * noise
+                        
+        #model.train() 
+        x = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
+        x = (x * 255).type(torch.uint8)
+
+        saved_name_final=f"{epoch}.jpg"  
+        save_images(x, os.path.join(save_img_folder,saved_name_final))
+        return x
+    
+    def sample_denoise(self, model, n, epoch, save_img_folder):
         logging.info(f"Sampling {n} new images....")
         model.eval()
         img_samples = []
@@ -188,7 +214,6 @@ def inference(args):
     model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
 
     epoch = 'test'
-
     n=1 # sample number
     save_img_folder = os.path.join("results", args.run_name)
     sampled_images = diffusion.sample(model, n=n, epoch=epoch, save_img_folder=save_img_folder)
@@ -202,7 +227,7 @@ def launch():
     args.epochs = 1000
     args.train_number = 20
     args.batch_size = 1
-    args.sample_interval = 10
+    args.sample_interval = 5
     args.image_size = 512
     args.time_dim = 32
     args.UNet_depth = 128
@@ -210,7 +235,7 @@ def launch():
     args.device = "cuda:1"
     args.lr = 5e-3
     args.noise_steps = 1000
-    args.pretrained_path = 'F:\yang_Projects\Diffusion-Models-pytorch/models/DDPM_Uncondtional\ckpt191.pt'
+    args.pretrained_path = 'F:\yang_Projects\Diffusion-Models-pytorch/models/DDPM_Uncondtional\ckpt231.pt'
     os.makedirs('./results/DDPM_Uncondtional',exist_ok=True)
     os.makedirs('./models/DDPM_Uncondtional',exist_ok=True)
     GPU_ID = 1
