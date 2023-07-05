@@ -345,7 +345,7 @@ class simpleDifftrainer():
                     #print(f"Epoch {epoch+1} | step {step:03d} Loss: {loss.item()} ")
                     sample_plot_image(model_Unet,IMG_SIZE,self.saved_img_folder,epoch,step)
 
-from my_dataset import myslicesloader
+from mydataloader.my_dataset import myslicesloader
 device='cuda' if torch.cuda.is_available() else 'cpu'
 # path to dataset
 dataset_path='./datasets/pelvis'

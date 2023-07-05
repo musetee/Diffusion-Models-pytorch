@@ -25,7 +25,7 @@ def load_pretrained_model(model, opt, pretrained_path=None):
         print(f'use pretrained model: {latest_ckpt}') 
         if 'epoch' in loaded_state:
             init_epoch=loaded_state["epoch"] # load or manually set
-            print(f'continue training from epoch {init_epoch}') 
+            print(f'continue from epoch {init_epoch}') 
             #init_epoch = int(input('Enter epoch number: '))
         else:
             print('no epoch information in the checkpoint file')
@@ -95,6 +95,7 @@ class Diffusion:
         logging.info(f"Sampling {n} new images....")
         model.eval()
         img_samples = []
+        index = []
         with torch.no_grad():
             x = torch.randn((n, self.img_channel, self.img_size, self.img_size)).to(self.device)
             for i in tqdm(reversed(range(1, self.noise_steps)), position=0):
@@ -109,19 +110,24 @@ class Diffusion:
                     noise = torch.zeros_like(x)
                 x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat))) * predicted_noise) + torch.sqrt(beta) * noise
                 
-                if i % 100 == 0:
+                if (i+1) % 100 == 0:
                     #img = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
                     #img = (img * 255).type(torch.uint8)
                     img=x
                     img_samples.append(img.detach().cpu().numpy())
+                    index.append(i+1)
+                elif i == 1:
+                    img_samples.append(img.detach().cpu().numpy())
+                    index.append(i)    
                 
         #model.train() 
+        print('final index',i)
         x = (x.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
         x = (x * 255).type(torch.uint8)
 
         num_images = len(img_samples)
         # after all the sampling steps (10 steps), save the images
-        titles = [i for i in range(0,num_images)]
+        titles = index #[i for i in range(0,num_images)]
         fig,axs=plt.subplots(1, int(num_images), figsize=(20,2))
         cnt = 0
         for j in range(num_images):
@@ -141,7 +147,7 @@ class Diffusion:
         return x
 
 
-from my_dataset import myslicesloader
+from mydataloader.my_dataset import myslicesloader
 def train(args):
     #setup_logging(args.run_name)
     device = args.device
@@ -215,29 +221,30 @@ def inference(args):
 
     epoch = 'test'
     n=1 # sample number
-    save_img_folder = os.path.join("results", args.run_name)
-    sampled_images = diffusion.sample(model, n=n, epoch=epoch, save_img_folder=save_img_folder)
+    save_img_folder = os.path.join("results", "sample", args.run_name)
+    os.makedirs(save_img_folder,exist_ok=True)
+    sampled_images = diffusion.sample_denoise(model, n=n, epoch=epoch, save_img_folder=save_img_folder)
 
 
 def launch():
     import argparse
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
-    args.run_name = "DDPM_Uncondtional"
+    args.run_name = "DDPM_Uncondtional_2"
     args.epochs = 1000
-    args.train_number = 20
+    args.train_number = 150
     args.batch_size = 1
-    args.sample_interval = 5
+    args.sample_interval = 1
     args.image_size = 512
     args.time_dim = 32
     args.UNet_depth = 128
-    args.dataset_path = r"F:\yang_Projects\Datasets\Task1\pelvis" # C:\Users\56991\Projects\Datasets\Task1\pelvis D:\Projects\data\Task1\pelvis
-    args.device = "cuda:1"
-    args.lr = 5e-3
+    args.dataset_path = r"F:\yang_Projects\Datasets\Task1\pelvis" # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" # D:\Projects\data\Task1\pelvis # r"F:\yang_Projects\Datasets\Tasks" #
+    args.device = "cuda:1" 
+    args.lr = 5e-6
     args.noise_steps = 1000
-    args.pretrained_path = 'F:\yang_Projects\Diffusion-Models-pytorch/models/DDPM_Uncondtional\ckpt231.pt'
-    os.makedirs('./results/DDPM_Uncondtional',exist_ok=True)
-    os.makedirs('./models/DDPM_Uncondtional',exist_ok=True)
+    args.pretrained_path = None # None
+    os.makedirs(f'./results/{args.run_name}',exist_ok=True)
+    os.makedirs(f'./models/{args.run_name}',exist_ok=True)
     GPU_ID = 1
     #device = torch.device(f'cuda:{GPU_ID}' if torch.cuda.is_available() else 'cpu') # 0=TitanXP, 1=P5000
     print(torch.cuda.get_device_name(GPU_ID))
