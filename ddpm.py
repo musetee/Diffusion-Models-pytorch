@@ -244,16 +244,15 @@ def launch():
     args.time_dim = 32
     args.UNet_depth = 128
     args.dataset_path = r"F:\yang_Projects\Datasets\Task1\pelvis" # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" # D:\Projects\data\Task1\pelvis # r"F:\yang_Projects\Datasets\Tasks" #
-    args.device = "cuda:1" 
+
     args.lr = 5e-5
     args.noise_steps = 1000
     args.pretrained_path = None # None
     os.makedirs(f'./results/{args.run_name}',exist_ok=True)
     os.makedirs(f'./models/{args.run_name}',exist_ok=True)
-    GPU_ID = 1
-    #device = torch.device(f'cuda:{GPU_ID}' if torch.cuda.is_available() else 'cpu') # 0=TitanXP, 1=P5000
 
-    
+    GPU_ID = 0
+    args.device = f'cuda:{GPU_ID}' if torch.cuda.is_available() else 'cpu' # 0=TitanXP, 1=P5000
     print(torch.cuda.get_device_name(GPU_ID))
     train(args)
     #inference(args)
