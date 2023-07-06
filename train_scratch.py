@@ -5,7 +5,7 @@ from torch.nn import functional as F
 from torch.utils.data import DataLoader
 from diffusers import DDPMScheduler, UNet2DModel
 from matplotlib import pyplot as plt
-from mydataloader.my_dataset import myslicesloader
+from mydataloader import myslicesloader
 
 dataset_path='./datasets/pelvis'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

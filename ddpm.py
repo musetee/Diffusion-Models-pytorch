@@ -147,7 +147,7 @@ class Diffusion:
         return x
 
 
-from mydataloader.my_dataset import myslicesloader
+from mydataloader.slice_loader import myslicesloader,len_patchloader
 def train(args):
     #setup_logging(args.run_name)
     device = args.device
@@ -165,16 +165,17 @@ def train(args):
                     div_size=(16,16,None),
                     ifcheck_volume=False,
                     ifcheck_sclices=False,)
+    slice_number,batch_number =len_patchloader(train_volume_ds,args.batch_size)
     dataloader=train_loader
     #l = len(dataloader)
-    l=1000 # only first test
+    l=batch_number # only first test
 
     model = UNet(c_in=1, c_out=1,time_dim=args.time_dim, depth=args.UNet_depth).to(device)
     # print parameter number 
     print(f"Number of parameters: {sum(p.numel() for p in model.parameters())}")
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     mse = nn.MSELoss()
-    diffusion = Diffusion(noise_steps=args.noise_steps, img_size=args.image_size, device=device)
+    diffusion = Diffusion(noise_steps=args.noise_steps, beta_start=args.beta_start, beta_end=args.beta_end, img_size=args.image_size, device=device)
     logger = SummaryWriter(os.path.join("runs", args.run_name))
     model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
 
@@ -200,8 +201,9 @@ def train(args):
 
         if epoch % args.sample_interval == 0:
             save_img_folder = os.path.join("results", args.run_name)
-            sampled_images = diffusion.sample(model, n=images.shape[0], epoch=epoch, save_img_folder=save_img_folder)            
-            
+            #sampled_images = diffusion.sample(model, n=images.shape[0], epoch=epoch, save_img_folder=save_img_folder)            
+            sampled_images = diffusion.sample_denoise(model, n=images.shape[0], epoch=epoch, save_img_folder=save_img_folder)
+
         torch.save({'epoch': epoch,
             'model': model.state_dict(),
             'opt': optimizer.state_dict()}, 
@@ -216,7 +218,7 @@ def inference(args):
 
     model = UNet(c_in=1, c_out=1,time_dim=args.time_dim, depth=args.UNet_depth).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
-    diffusion = Diffusion(noise_steps=args.noise_steps, img_size=args.image_size, device=device)
+    diffusion = Diffusion(noise_steps=args.noise_steps, beta_start=args.beta_start, beta_end=args.beta_end, img_size=args.image_size, device=device)
     model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
 
     epoch = 'test'
@@ -230,23 +232,28 @@ def launch():
     import argparse
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
-    args.run_name = "DDPM_Uncondtional_2"
+    args.run_name = "DDPM_Uncondtional_5"
     args.epochs = 1000
-    args.train_number = 150
+    args.train_number = 10
     args.batch_size = 1
     args.sample_interval = 1
+    args.beta_start = 0.0015
+    args.beta_end = 0.0195
+
     args.image_size = 512
     args.time_dim = 32
     args.UNet_depth = 128
     args.dataset_path = r"F:\yang_Projects\Datasets\Task1\pelvis" # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" # D:\Projects\data\Task1\pelvis # r"F:\yang_Projects\Datasets\Tasks" #
     args.device = "cuda:1" 
-    args.lr = 5e-6
+    args.lr = 5e-5
     args.noise_steps = 1000
     args.pretrained_path = None # None
     os.makedirs(f'./results/{args.run_name}',exist_ok=True)
     os.makedirs(f'./models/{args.run_name}',exist_ok=True)
     GPU_ID = 1
     #device = torch.device(f'cuda:{GPU_ID}' if torch.cuda.is_available() else 'cpu') # 0=TitanXP, 1=P5000
+
+    
     print(torch.cuda.get_device_name(GPU_ID))
     train(args)
     #inference(args)
