@@ -21,6 +21,7 @@ from generative.networks.nets import DiffusionModelUNet
 from generative.networks.schedulers import DDPMScheduler
 from utils import save_images
 from mydataloader.slice_loader import myslicesloader,len_patchloader
+
 def setupdata(args):
     #setup_logging(args.run_name)
     device = args.device
@@ -52,6 +53,34 @@ def checkdata(train_loader):
     plt.axis("off")
     plt.tight_layout()
     plt.show()
+
+import torch.nn as nn
+def weights_init(m):
+    if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+        torch.nn.init.normal_(m.weight, 0.0, 0.02)
+    if isinstance(m, nn.BatchNorm2d):
+        torch.nn.init.normal_(m.weight, 0.0, 0.02)
+        torch.nn.init.constant_(m.bias, 0)
+
+def load_pretrained_model(model, opt, pretrained_path=None):
+    if pretrained_path is not None:
+        latest_ckpt=pretrained_path
+        loaded_state = torch.load(latest_ckpt)
+        print(f'use pretrained model: {latest_ckpt}') 
+        if 'epoch' in loaded_state:
+            init_epoch=loaded_state["epoch"] # load or manually set
+            print(f'continue from epoch {init_epoch}') 
+            #init_epoch = int(input('Enter epoch number: '))
+        else:
+            print('no epoch information in the checkpoint file')
+            init_epoch = int(input('Enter epoch number: '))
+        model.load_state_dict(loaded_state["model"]) #
+        opt.load_state_dict(loaded_state["opt"])
+    else:
+        init_epoch=0
+        #model = model.apply(weights_init)
+        print(f'start new training') 
+    return model, opt, init_epoch
 
 class DiffusionModel:
     def __init__(self,args):
@@ -86,10 +115,12 @@ class DiffusionModel:
             val_interval = args.val_interval
             epoch_loss_list = []
             val_epoch_loss_list = []
+            model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
 
             scaler = GradScaler()
             total_start = time.time()
-            for epoch in range(n_epochs):
+            for continue_epoch in range(n_epochs):
+                epoch = continue_epoch + init_epoch + 1
                 model.train()
                 epoch_loss = 0
                 progress_bar = tqdm(enumerate(train_loader), total=batch_number, ncols=70)
@@ -121,8 +152,14 @@ class DiffusionModel:
                     progress_bar.set_postfix({"loss": epoch_loss / (step + 1)})
                 epoch_loss_list.append(epoch_loss / (step + 1))
                 logger.add_scalar("train_epoch_loss", epoch_loss / (step + 1), global_step=epoch)
+                
+                torch.save({'epoch': epoch,
+                    'model': model.state_dict(),
+                    'opt': optimizer.state_dict()}, 
+                    os.path.join("models", args.run_name, f"ckpt{epoch}.pt"))
 
-                if (epoch + 1) % val_interval == 0:
+
+                if (epoch) % val_interval == 0:
                     model.eval()
                     val_epoch_loss = 0
                     for step, batch in enumerate(val_loader):
@@ -196,13 +233,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args.run_name = "DDPM_monai_1"
     args.n_epochs=5
-    args.val_interval=1
+    args.val_interval=5
     args.train_number = 1
     args.val_number = 1
     args.batch_size = 1
 
     args.image_size = 512
-
+    args.pretrained_path = None 
     args.dataset_path = r"D:\Projects\data\Task1\pelvis"
     # r"F:\yang_Projects\Datasets\Task1\pelvis" 
     # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" 
