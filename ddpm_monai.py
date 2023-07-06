@@ -116,11 +116,11 @@ class DiffusionModel:
                     scaler.step(optimizer)
                     scaler.update()
                     epoch_loss += loss.item()
-                    logger.add_scalar("MSE", loss.item(), global_step=epoch * batch_number + step)
+                    logger.add_scalar("train_loss_MSE", loss.item(), global_step=epoch * batch_number + step)
 
                     progress_bar.set_postfix({"loss": epoch_loss / (step + 1)})
                 epoch_loss_list.append(epoch_loss / (step + 1))
-                logger.add_scalar("epoch_loss", epoch_loss / (step + 1), global_step=epoch)
+                logger.add_scalar("train_epoch_loss", epoch_loss / (step + 1), global_step=epoch)
 
                 if (epoch + 1) % val_interval == 0:
                     model.eval()
