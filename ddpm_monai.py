@@ -230,23 +230,23 @@ if __name__ == "__main__":
     set_determinism(42)
     import argparse
     parser = argparse.ArgumentParser()
-    args = parser.parse_args()
-    args.run_name = "DDPM_monai_1"
-    args.n_epochs=5
-    args.val_interval=5
-    args.train_number = 1
-    args.val_number = 1
-    args.batch_size = 1
-
-    args.image_size = 512
-    args.pretrained_path = None 
-    args.dataset_path = r"D:\Projects\data\Task1\pelvis"
+    parser.add_argument("--run_name", type=str, default="DDPM")
+    parser.add_argument("--n_epochs", type=int, default=50) 
+    parser.add_argument("--val_interval", type=int, default=5)
+    parser.add_argument("--train_number", type=int, default=150)
+    parser.add_argument("--val_number", type=int, default=10)
+    parser.add_argument("--batch_size", type=int, default=1)
+    parser.add_argument("--image_size", type=int, default=512)
+    parser.add_argument("--pretrained_path", type=str, default=None)
+    parser.add_argument("--dataset_path", type=str, default=r"D:\Projects\data\Task1\pelvis")
     # r"F:\yang_Projects\Datasets\Task1\pelvis" 
     # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" 
     # r"D:\Projects\data\Task1\pelvis" 
-    GPU_ID = 0
-    args.device = f'cuda:{GPU_ID}' if torch.cuda.is_available() else 'cpu' # 0=TitanXP, 1=P5000
-    print(torch.cuda.get_device_name(GPU_ID))
+    parser.add_argument("--GPU_ID", type=int, default=0)
+
+    args = parser.parse_args()
+    args.device = f'cuda:{args.GPU_ID}' if torch.cuda.is_available() else 'cpu' # 0=TitanXP, 1=P5000
+    print(torch.cuda.get_device_name(args.GPU_ID))
     os.makedirs(f'./results/{args.run_name}',exist_ok=True)
     os.makedirs(f'./models/{args.run_name}',exist_ok=True)
     train_loader,batch_number,val_loader=setupdata(args)
