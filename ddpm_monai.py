@@ -37,6 +37,7 @@ def setupdata(args):
                     saved_name_val='./val_ds_2d.csv',
                     resized_size=(args.image_size, args.image_size, None),
                     div_size=(16,16,None),
+                    center_crop=args.center_crop,
                     ifcheck_volume=False,
                     ifcheck_sclices=False,)
     slice_number,batch_number =len_patchloader(train_volume_ds,args.batch_size)
@@ -235,6 +236,7 @@ if __name__ == "__main__":
     parser.add_argument("--val_interval", type=int, default=5)
     parser.add_argument("--train_number", type=int, default=150)
     parser.add_argument("--val_number", type=int, default=10)
+    parser.add_argument("--center_crop", type=int, default=20)
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--image_size", type=int, default=512)
     parser.add_argument("--pretrained_path", type=str, default=None)
