@@ -95,8 +95,8 @@ class DiffusionModel:
             num_head_channels=256,
         )
         self.model.to(self.device)
-        self.scheduler = DDPMScheduler(num_train_timesteps=1000)
-        self.optimizer = torch.optim.Adam(params=self.model.parameters(), lr=2.5e-5)
+        self.scheduler = DDPMScheduler(num_train_timesteps=args.num_train_timesteps)
+        self.optimizer = torch.optim.Adam(params=self.model.parameters(), lr=args.lr) # 2.5e-5
         self.inferer = DiffusionInferer(self.scheduler)
 
     def train(self,args,train_loader,batch_number ,val_loader):
@@ -181,7 +181,7 @@ class DiffusionModel:
                     # Sampling image during training
                     noise = torch.randn((1, images.shape[1], images.shape[2], images.shape[3]))
                     noise = noise.to(device)
-                    scheduler.set_timesteps(num_inference_steps=1000)
+                    scheduler.set_timesteps(num_inference_steps=args.num_inference_steps)
                     with autocast(enabled=True):
                         image = inferer.sample(input_noise=noise, diffusion_model=model, scheduler=scheduler)
                     save_img_folder = os.path.join("results", args.run_name)
@@ -238,6 +238,9 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--image_size", type=int, default=512)
     parser.add_argument("--pretrained_path", type=str, default=None)
+    parser.add_argument("--lr", type=float, default=2.5e-5)
+    parser.add_argument("--num_train_timesteps", type=int, default=1000)
+    parser.add_argument("--num_inference_steps", type=int, default=1000)
     parser.add_argument("--dataset_path", type=str, default=r"D:\Projects\data\Task1\pelvis")
     # r"F:\yang_Projects\Datasets\Task1\pelvis" 
     # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" 
