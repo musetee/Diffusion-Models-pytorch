@@ -90,10 +90,10 @@ class DiffusionModel:
             spatial_dims=2,
             in_channels=1,
             out_channels=1,
-            num_channels=(128, 256, 256),
-            attention_levels=(False, False, True),
-            num_res_blocks=1,
-            num_head_channels=256,
+            num_channels=(32, 64, 64, 64), # (128, 256, 256),
+            attention_levels=(False, False, False, True),
+            num_res_blocks=2,
+            num_head_channels=32, # 256
         )
         self.model.to(self.device)
         self.scheduler = DDPMScheduler(num_train_timesteps=args.num_train_timesteps)
@@ -231,23 +231,23 @@ if __name__ == "__main__":
     set_determinism(42)
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run_name", type=str, default="DDPM")
+    parser.add_argument("--run_name", type=str, default="DDPM_test")
     parser.add_argument("--n_epochs", type=int, default=50) 
     parser.add_argument("--val_interval", type=int, default=5)
-    parser.add_argument("--train_number", type=int, default=150)
-    parser.add_argument("--val_number", type=int, default=10)
+    parser.add_argument("--train_number", type=int, default=2)
+    parser.add_argument("--val_number", type=int, default=1)
     parser.add_argument("--center_crop", type=int, default=20)
-    parser.add_argument("--batch_size", type=int, default=1)
+    parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--image_size", type=int, default=512)
     parser.add_argument("--pretrained_path", type=str, default=None)
     parser.add_argument("--lr", type=float, default=2.5e-5)
     parser.add_argument("--num_train_timesteps", type=int, default=1000)
     parser.add_argument("--num_inference_steps", type=int, default=1000)
-    parser.add_argument("--dataset_path", type=str, default=r"D:\Projects\data\Task1\pelvis")
+    parser.add_argument("--dataset_path", type=str, default=r"F:\yang_Projects\Datasets\Task1\pelvis")
     # r"F:\yang_Projects\Datasets\Task1\pelvis" 
     # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" 
     # r"D:\Projects\data\Task1\pelvis" 
-    parser.add_argument("--GPU_ID", type=int, default=0)
+    parser.add_argument("--GPU_ID", type=int, default=1)
 
     args = parser.parse_args()
     args.device = f'cuda:{args.GPU_ID}' if torch.cuda.is_available() else 'cpu' # 0=TitanXP, 1=P5000

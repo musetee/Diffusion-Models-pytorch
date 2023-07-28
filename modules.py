@@ -212,7 +212,7 @@ class UNet_conditional(UNet):
         if num_classes is not None:
             self.label_emb = nn.Embedding(num_classes, time_dim)
 
-    def forward(self, x, t, y=None):
+    def forward(self, x, t, y=None): # y is label
         t = t.unsqueeze(-1)
         t = self.pos_encoding(t, self.time_dim)
 
