@@ -18,7 +18,7 @@ from fastprogress import progress_bar
 import wandb
 from utils import *
 from modules import UNet_conditional, EMA
-
+from mydataloader.conditional_loader import get_dataset
 logging.basicConfig(format="%(asctime)s - %(levelname)s: %(message)s", level=logging.INFO, datefmt="%I:%M:%S")
 
 
@@ -132,9 +132,29 @@ class Diffusion:
         at.add_dir(os.path.join("models", run_name))
         wandb.log_artifact(at)
 
+    
+
     def prepare(self, args):
         mk_folders(args.run_name)
-        self.train_dataloader, self.val_dataloader = get_data(args)
+        #self.train_dataloader, self.val_dataloader = get_data(args)
+        data_pelvis_path=args.dataset_path
+        train_number=args.train_number
+        val_number=args.val_number
+        normalize=args.normalize
+        resized_size=(args.img_size, args.img_size)
+        div_size=(args.div_size,args.div_size)
+        center_crop=args.center_crop
+        train_batch_size=args.train_batch_size
+        val_batch_size=args.val_batch_size
+        self.train_dataloader, self.val_dataloader = get_dataset(data_pelvis_path, 
+                                                                train_number, 
+                                                                val_number, 
+                                                                normalize, 
+                                                                resized_size, 
+                                                                div_size, 
+                                                                center_crop,
+                                                                train_batch_size,
+                                                                val_batch_size)
         self.optimizer = optim.AdamW(self.model.parameters(), lr=args.lr, eps=1e-5)
         self.scheduler = optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=args.lr, 
                                                  steps_per_epoch=len(self.train_dataloader), epochs=args.epochs)
@@ -163,21 +183,26 @@ class Diffusion:
             self.save_model(run_name=args.run_name, epoch=epoch)
 
 
-
-
 def parse_args(config):
     parser = argparse.ArgumentParser(description='Process hyper-parameters')
     parser.add_argument('--run_name', type=str, default=config.run_name, help='name of the run')
     parser.add_argument('--epochs', type=int, default=config.epochs, help='number of epochs')
     parser.add_argument('--seed', type=int, default=config.seed, help='random seed')
-    parser.add_argument('--batch_size', type=int, default=config.batch_size, help='batch size')
-    parser.add_argument('--img_size', type=int, default=config.img_size, help='image size')
+    #parser.add_argument('--batch_size', type=int, default=config.batch_size, help='batch size')
+    parser.add_argument('--img_size', type=int, default=512, help='image size')
     parser.add_argument('--num_classes', type=int, default=config.num_classes, help='number of classes')
     parser.add_argument('--dataset_path', type=str, default=config.dataset_path, help='path to dataset')
     parser.add_argument('--device', type=str, default=config.device, help='device')
     parser.add_argument('--lr', type=float, default=config.lr, help='learning rate')
     parser.add_argument('--slice_size', type=int, default=config.slice_size, help='slice size')
     parser.add_argument('--noise_steps', type=int, default=config.noise_steps, help='noise steps')
+    parser.add_argument('--train_number', type=int, default=10 , help='number of train data')
+    parser.add_argument('--val_number', type=int, default=1, help='number of val data')
+    parser.add_argument('--normalize', type=str, default='zscore', help='normalize')
+    parser.add_argument('--div_size', type=int, default=16, help='div size')
+    parser.add_argument('--center_crop', type=int, default=0,help='center crop')
+    parser.add_argument('--train_batch_size', type=int, default=8, help='train batch size')
+    parser.add_argument('--val_batch_size', type=int, default=1, help='val batch size')
     args = vars(parser.parse_args())
     
     # update config with parsed args
@@ -191,19 +216,26 @@ if __name__ == '__main__':
     epochs = 100,
     noise_steps=1000,
     seed = 42,
-    batch_size = 10,
-    img_size = 64,
-    num_classes = 10,
-    dataset_path = get_cifar(img_size=64),
-    train_folder = "train",
-    val_folder = "test",
+    #batch_size = 10,
+    img_size = 512,
+    num_classes = 150,
+    dataset_path = r'C:\Users\56991\Projects\Datasets\Task1\pelvis', # get_cifar(img_size=64),
+    #train_folder = "train",
+    #val_folder = "test",
     device = "cuda",
     slice_size = 1,
     do_validation = True,
-    fp16 = True,
+    #fp16 = True,
     log_every_epoch = 5,
-    num_workers=10,
-    lr = 5e-3)
+    num_workers=0,
+    lr = 5e-3,
+    train_number=10,
+    val_number=1,
+    normalize='zscore',
+    div_size=16,
+    center_crop=0,
+    train_batch_size=8,
+    val_batch_size=1)
     parse_args(config)
 
     ## seed everything
