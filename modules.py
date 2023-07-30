@@ -142,11 +142,11 @@ class UNet(nn.Module):
         self.remove_deep_conv = remove_deep_conv
         self.inc = DoubleConv(c_in, depth_8) # [B, depth_8, img_size, img_size]
         self.down1 = Down(depth_8, depth_4, emb_dim=time_dim) # [B, depth_4, img_size/2, img_size/2]
-        self.sa1 = SelfAttention(depth_4)
+        self.sa1 = SelfAttention(depth_4) #128
         self.down2 = Down(depth_4, depth_2, emb_dim=time_dim) # [B, depth_2, img_size/4, img_size/4]
-        self.sa2 = SelfAttention(depth_2)
+        self.sa2 = SelfAttention(depth_2) #256
         self.down3 = Down(depth_2, depth_2, emb_dim=time_dim) # [B, depth_2, img_size/8, img_size/8]
-        self.sa3 = SelfAttention(depth_2)
+        self.sa3 = SelfAttention(depth_2) #256
 
 
         if remove_deep_conv:
@@ -158,11 +158,11 @@ class UNet(nn.Module):
             self.bot3 = DoubleConv(depth, depth_2) # [B, depth_2, img_size/8, img_size/8]
 
         self.up1 = Up(depth, depth_4, emb_dim=time_dim) # [B, depth_4, img_size/4, img_size/4]
-        self.sa4 = SelfAttention(depth_4)
+        self.sa4 = SelfAttention(depth_4) #128
         self.up2 = Up(depth_2, depth_8, emb_dim=time_dim) # [B, depth_8, img_size/2, img_size/2]
-        self.sa5 = SelfAttention(depth_8)
+        self.sa5 = SelfAttention(depth_8) #64
         self.up3 = Up(depth_4, depth_8, emb_dim=time_dim) # [B, depth_8, img_size, img_size]
-        self.sa6 = SelfAttention(depth_8)
+        self.sa6 = SelfAttention(depth_8) #64
         self.outc = nn.Conv2d(depth_8, c_out, kernel_size=1)
 
     def pos_encoding(self, t, channels):
@@ -184,7 +184,7 @@ class UNet(nn.Module):
         x3 = self.down2(x2, t) # [B, depth_2, img_size/4, img_size/4] = torch.Size([1, 32, 128, 128])
         #x3 = self.sa2(x3)
         x4 = self.down3(x3, t) # [B, depth_2, img_size/8, img_size/8] = torch.Size([1, 32, 64, 64])
-        x4 = self.sa3(x4)
+        #x4 = self.sa3(x4)
 
         x4 = self.bot1(x4) # [B, depth, img_size/8, img_size/8]
         if not self.remove_deep_conv:
@@ -192,7 +192,7 @@ class UNet(nn.Module):
         x4 = self.bot3(x4) # [B, depth_2, img_size/8, img_size/8]
 
         x = self.up1(x4, x3, t) # concat(up(x4), x3) -> [B, depth_4, img_size/4, img_size/4]
-        x = self.sa4(x)
+        #x = self.sa4(x)
         x = self.up2(x, x2, t) # [B, depth_8, img_size/2, img_size/2]
         #x = self.sa5(x) 
         x = self.up3(x, x1, t) # [B, depth_8, img_size, img_size]
