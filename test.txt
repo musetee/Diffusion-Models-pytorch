@@ -1,0 +1,1089 @@
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([0, 1, 2, 3, 4, 5, 6, 7])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 8,  9, 10, 11, 12, 13, 14, 15])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([16, 17, 18, 19, 20, 21, 22, 23])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([24, 25, 26, 27, 28, 29, 30, 31])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([32, 33, 34, 35, 36, 37, 38, 39])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([40, 41, 42, 43, 44, 45, 46, 47])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([48, 49, 50, 51, 52, 53, 54, 55])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([56, 57, 58, 59, 60, 61, 62, 63])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([64, 65, 66, 67, 68, 69, 70, 71])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([72, 73, 74, 75, 76, 77, 78, 79])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([80, 81, 82, 83, 84, 85, 86, 87])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([88, 89, 90, 91, 92, 93, 94, 95])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 96,  97,  98,  99, 100, 101, 102, 103])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([104, 105, 106, 107, 108, 109, 110, 111])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([112, 113, 114, 115, 116, 117, 118, 119])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([120, 121, 122, 123, 124, 125, 126, 127])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([128, 129, 130, 131, 132, 133, 134, 135])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([136, 137, 138, 139, 140, 141, 142, 143])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([144,   0,   1,   2,   3,   4,   5,   6])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 7,  8,  9, 10, 11, 12, 13, 14])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([15, 16, 17, 18, 19, 20, 21, 22])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([23, 24, 25, 26, 27, 28, 29, 30])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([31, 32, 33, 34, 35, 36, 37, 38])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([39, 40, 41, 42, 43, 44, 45, 46])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([47, 48, 49, 50, 51, 52, 53, 54])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([55, 56, 57, 58, 59, 60, 61, 62])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([63, 64, 65, 66, 67, 68, 69, 70])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([71, 72, 73, 74, 75, 76, 77, 78])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([79, 80, 81, 82, 83, 84, 85, 86])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([87, 88, 89, 90, 91, 92, 93, 94])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 95,  96,  97,  98,  99, 100, 101, 102])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([103, 104, 105, 106, 107, 108, 109, 110])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([111, 112, 113, 114, 115, 116, 117, 118])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([119, 120, 121, 122, 123, 124, 125, 126])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([127, 128, 129, 130, 131, 132, 133, 134])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([135, 136, 137, 138, 139, 140, 141, 142])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([143, 144, 145, 146, 147,   0,   1,   2])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 3,  4,  5,  6,  7,  8,  9, 10])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([11, 12, 13, 14, 15, 16, 17, 18])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([19, 20, 21, 22, 23, 24, 25, 26])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([27, 28, 29, 30, 31, 32, 33, 34])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([35, 36, 37, 38, 39, 40, 41, 42])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([43, 44, 45, 46, 47, 48, 49, 50])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([51, 52, 53, 54, 55, 56, 57, 58])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([59, 60, 61, 62, 63, 64, 65, 66])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([67, 68, 69, 70, 71, 72, 73, 74])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([75, 76, 77, 78, 79, 80, 81, 82])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([83, 84, 85, 86, 87, 88, 89, 90])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([91, 92, 93, 94, 95, 96, 97, 98])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 99, 100, 101, 102, 103, 104, 105, 106])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([107, 108, 109, 110, 111, 112, 113, 114])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([115, 116, 117, 118, 119, 120, 121, 122])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([123, 124, 125, 126, 127, 128, 129, 130])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([131, 132, 133, 134, 135, 136, 137, 138])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([139, 140, 141, 142, 143, 144, 145, 146])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([147, 148, 149,   0,   1,   2,   3,   4])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 5,  6,  7,  8,  9, 10, 11, 12])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([13, 14, 15, 16, 17, 18, 19, 20])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([21, 22, 23, 24, 25, 26, 27, 28])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([29, 30, 31, 32, 33, 34, 35, 36])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([37, 38, 39, 40, 41, 42, 43, 44])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([45, 46, 47, 48, 49, 50, 51, 52])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([53, 54, 55, 56, 57, 58, 59, 60])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([61, 62, 63, 64, 65, 66, 67, 68])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([69, 70, 71, 72, 73, 74, 75, 76])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([77, 78, 79, 80, 81, 82, 83, 84])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([85, 86, 87, 88, 89, 90, 91, 92])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 93,  94,  95,  96,  97,  98,  99, 100])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([101, 102, 103, 104, 105, 106, 107, 108])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([109, 110, 111, 112, 113, 114, 115, 116])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([117, 118, 119, 120, 121, 122, 123, 124])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([125, 126, 127, 128, 129, 130, 131, 132])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([0, 1, 2, 3, 4, 5, 6, 7])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 8,  9, 10, 11, 12, 13, 14, 15])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([16, 17, 18, 19, 20, 21, 22, 23])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([24, 25, 26, 27, 28, 29, 30, 31])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([32, 33, 34, 35, 36, 37, 38, 39])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([40, 41, 42, 43, 44, 45, 46, 47])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([48, 49, 50, 51, 52, 53, 54, 55])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([56, 57, 58, 59, 60, 61, 62, 63])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([64, 65, 66, 67, 68, 69, 70, 71])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([72, 73, 74, 75, 76, 77, 78, 79])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([80, 81, 82, 83, 84, 85, 86, 87])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([88, 89, 90, 91, 92, 93, 94, 95])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 96,  97,  98,  99, 100, 101, 102, 103])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([104, 105, 106, 107, 108, 109, 110, 111])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([112, 113, 114, 115, 116, 117, 118, 119])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([120, 121, 122, 123, 124, 125, 126, 127])
+
+image batch:torch.Size([7, 1, 512, 512])
+label batch:tensor([128, 129, 130, 131, 132, 133, 134])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([0, 1, 2, 3, 4, 5, 6, 7])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 8,  9, 10, 11, 12, 13, 14, 15])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([16, 17, 18, 19, 20, 21, 22, 23])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([24, 25, 26, 27, 28, 29, 30, 31])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([32, 33, 34, 35, 36, 37, 38, 39])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([40, 41, 42, 43, 44, 45, 46, 47])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([48, 49, 50, 51, 52, 53, 54, 55])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([56, 57, 58, 59, 60, 61, 62, 63])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([64, 65, 66, 67, 68, 69, 70, 71])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([72, 73, 74, 75, 76, 77, 78, 79])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([80, 81, 82, 83, 84, 85, 86, 87])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([88, 89, 90, 91, 92, 93, 94, 95])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 96,  97,  98,  99, 100, 101, 102, 103])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([104, 105, 106, 107, 108, 109, 110, 111])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([112, 113, 114, 115, 116, 117, 118, 119])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([120, 121, 122, 123, 124, 125, 126, 127])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([128, 129, 130, 131, 132, 133, 134, 135])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([136, 137, 138, 139, 140, 141, 142, 143])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([144,   0,   1,   2,   3,   4,   5,   6])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 7,  8,  9, 10, 11, 12, 13, 14])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([15, 16, 17, 18, 19, 20, 21, 22])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([23, 24, 25, 26, 27, 28, 29, 30])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([31, 32, 33, 34, 35, 36, 37, 38])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([39, 40, 41, 42, 43, 44, 45, 46])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([47, 48, 49, 50, 51, 52, 53, 54])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([55, 56, 57, 58, 59, 60, 61, 62])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([63, 64, 65, 66, 67, 68, 69, 70])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([71, 72, 73, 74, 75, 76, 77, 78])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([79, 80, 81, 82, 83, 84, 85, 86])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([87, 88, 89, 90, 91, 92, 93, 94])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 95,  96,  97,  98,  99, 100, 101, 102])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([103, 104, 105, 106, 107, 108, 109, 110])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([111, 112, 113, 114, 115, 116, 117, 118])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([119, 120, 121, 122, 123, 124, 125, 126])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([127, 128, 129, 130, 131, 132, 133, 134])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([135, 136, 137, 138, 139, 140, 141, 142])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([143, 144, 145, 146, 147,   0,   1,   2])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 3,  4,  5,  6,  7,  8,  9, 10])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([11, 12, 13, 14, 15, 16, 17, 18])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([19, 20, 21, 22, 23, 24, 25, 26])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([27, 28, 29, 30, 31, 32, 33, 34])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([35, 36, 37, 38, 39, 40, 41, 42])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([43, 44, 45, 46, 47, 48, 49, 50])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([51, 52, 53, 54, 55, 56, 57, 58])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([59, 60, 61, 62, 63, 64, 65, 66])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([67, 68, 69, 70, 71, 72, 73, 74])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([75, 76, 77, 78, 79, 80, 81, 82])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([83, 84, 85, 86, 87, 88, 89, 90])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([91, 92, 93, 94, 95, 96, 97, 98])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 99, 100, 101, 102, 103, 104, 105, 106])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([107, 108, 109, 110, 111, 112, 113, 114])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([115, 116, 117, 118, 119, 120, 121, 122])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([123, 124, 125, 126, 127, 128, 129, 130])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([131, 132, 133, 134, 135, 136, 137, 138])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([139, 140, 141, 142, 143, 144, 145, 146])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([147, 148, 149,   0,   1,   2,   3,   4])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 5,  6,  7,  8,  9, 10, 11, 12])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([13, 14, 15, 16, 17, 18, 19, 20])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([21, 22, 23, 24, 25, 26, 27, 28])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([29, 30, 31, 32, 33, 34, 35, 36])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([37, 38, 39, 40, 41, 42, 43, 44])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([45, 46, 47, 48, 49, 50, 51, 52])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([53, 54, 55, 56, 57, 58, 59, 60])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([61, 62, 63, 64, 65, 66, 67, 68])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([69, 70, 71, 72, 73, 74, 75, 76])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([77, 78, 79, 80, 81, 82, 83, 84])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([85, 86, 87, 88, 89, 90, 91, 92])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 93,  94,  95,  96,  97,  98,  99, 100])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([101, 102, 103, 104, 105, 106, 107, 108])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([109, 110, 111, 112, 113, 114, 115, 116])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([117, 118, 119, 120, 121, 122, 123, 124])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([125, 126, 127, 128, 129, 130, 131, 132])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([0, 1, 2, 3, 4, 5, 6, 7])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 8,  9, 10, 11, 12, 13, 14, 15])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([16, 17, 18, 19, 20, 21, 22, 23])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([24, 25, 26, 27, 28, 29, 30, 31])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([32, 33, 34, 35, 36, 37, 38, 39])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([40, 41, 42, 43, 44, 45, 46, 47])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([48, 49, 50, 51, 52, 53, 54, 55])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([56, 57, 58, 59, 60, 61, 62, 63])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([64, 65, 66, 67, 68, 69, 70, 71])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([72, 73, 74, 75, 76, 77, 78, 79])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([80, 81, 82, 83, 84, 85, 86, 87])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([88, 89, 90, 91, 92, 93, 94, 95])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 96,  97,  98,  99, 100, 101, 102, 103])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([104, 105, 106, 107, 108, 109, 110, 111])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([112, 113, 114, 115, 116, 117, 118, 119])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([120, 121, 122, 123, 124, 125, 126, 127])
+
+image batch:torch.Size([7, 1, 512, 512])
+label batch:tensor([128, 129, 130, 131, 132, 133, 134])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([0, 1, 2, 3, 4, 5, 6, 7])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 8,  9, 10, 11, 12, 13, 14, 15])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([16, 17, 18, 19, 20, 21, 22, 23])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([24, 25, 26, 27, 28, 29, 30, 31])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([32, 33, 34, 35, 36, 37, 38, 39])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([40, 41, 42, 43, 44, 45, 46, 47])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([48, 49, 50, 51, 52, 53, 54, 55])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([56, 57, 58, 59, 60, 61, 62, 63])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([64, 65, 66, 67, 68, 69, 70, 71])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([72, 73, 74, 75, 76, 77, 78, 79])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([80, 81, 82, 83, 84, 85, 86, 87])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([88, 89, 90, 91, 92, 93, 94, 95])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 96,  97,  98,  99, 100, 101, 102, 103])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([104, 105, 106, 107, 108, 109, 110, 111])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([112, 113, 114, 115, 116, 117, 118, 119])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([120, 121, 122, 123, 124, 125, 126, 127])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([128, 129, 130, 131, 132, 133, 134, 135])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([136, 137, 138, 139, 140, 141, 142, 143])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([144,   0,   1,   2,   3,   4,   5,   6])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 7,  8,  9, 10, 11, 12, 13, 14])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([15, 16, 17, 18, 19, 20, 21, 22])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([23, 24, 25, 26, 27, 28, 29, 30])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([31, 32, 33, 34, 35, 36, 37, 38])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([39, 40, 41, 42, 43, 44, 45, 46])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([47, 48, 49, 50, 51, 52, 53, 54])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([55, 56, 57, 58, 59, 60, 61, 62])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([63, 64, 65, 66, 67, 68, 69, 70])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([71, 72, 73, 74, 75, 76, 77, 78])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([79, 80, 81, 82, 83, 84, 85, 86])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([87, 88, 89, 90, 91, 92, 93, 94])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 95,  96,  97,  98,  99, 100, 101, 102])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([103, 104, 105, 106, 107, 108, 109, 110])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([111, 112, 113, 114, 115, 116, 117, 118])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([119, 120, 121, 122, 123, 124, 125, 126])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([127, 128, 129, 130, 131, 132, 133, 134])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([135, 136, 137, 138, 139, 140, 141, 142])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([143, 144, 145, 146, 147,   0,   1,   2])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 3,  4,  5,  6,  7,  8,  9, 10])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([11, 12, 13, 14, 15, 16, 17, 18])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([19, 20, 21, 22, 23, 24, 25, 26])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([27, 28, 29, 30, 31, 32, 33, 34])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([35, 36, 37, 38, 39, 40, 41, 42])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([43, 44, 45, 46, 47, 48, 49, 50])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([51, 52, 53, 54, 55, 56, 57, 58])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([59, 60, 61, 62, 63, 64, 65, 66])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([67, 68, 69, 70, 71, 72, 73, 74])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([75, 76, 77, 78, 79, 80, 81, 82])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([83, 84, 85, 86, 87, 88, 89, 90])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([91, 92, 93, 94, 95, 96, 97, 98])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 99, 100, 101, 102, 103, 104, 105, 106])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([107, 108, 109, 110, 111, 112, 113, 114])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([115, 116, 117, 118, 119, 120, 121, 122])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([123, 124, 125, 126, 127, 128, 129, 130])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([131, 132, 133, 134, 135, 136, 137, 138])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([139, 140, 141, 142, 143, 144, 145, 146])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([147, 148, 149,   0,   1,   2,   3,   4])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 5,  6,  7,  8,  9, 10, 11, 12])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([13, 14, 15, 16, 17, 18, 19, 20])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([21, 22, 23, 24, 25, 26, 27, 28])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([29, 30, 31, 32, 33, 34, 35, 36])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([37, 38, 39, 40, 41, 42, 43, 44])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([45, 46, 47, 48, 49, 50, 51, 52])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([53, 54, 55, 56, 57, 58, 59, 60])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([61, 62, 63, 64, 65, 66, 67, 68])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([69, 70, 71, 72, 73, 74, 75, 76])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([77, 78, 79, 80, 81, 82, 83, 84])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([85, 86, 87, 88, 89, 90, 91, 92])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 93,  94,  95,  96,  97,  98,  99, 100])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([101, 102, 103, 104, 105, 106, 107, 108])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([109, 110, 111, 112, 113, 114, 115, 116])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([117, 118, 119, 120, 121, 122, 123, 124])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([125, 126, 127, 128, 129, 130, 131, 132])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([0, 1, 2, 3, 4, 5, 6, 7])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 8,  9, 10, 11, 12, 13, 14, 15])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([16, 17, 18, 19, 20, 21, 22, 23])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([24, 25, 26, 27, 28, 29, 30, 31])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([32, 33, 34, 35, 36, 37, 38, 39])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([40, 41, 42, 43, 44, 45, 46, 47])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([48, 49, 50, 51, 52, 53, 54, 55])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([56, 57, 58, 59, 60, 61, 62, 63])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([64, 65, 66, 67, 68, 69, 70, 71])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([72, 73, 74, 75, 76, 77, 78, 79])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([80, 81, 82, 83, 84, 85, 86, 87])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([88, 89, 90, 91, 92, 93, 94, 95])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 96,  97,  98,  99, 100, 101, 102, 103])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([104, 105, 106, 107, 108, 109, 110, 111])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([112, 113, 114, 115, 116, 117, 118, 119])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([120, 121, 122, 123, 124, 125, 126, 127])
+
+image batch:torch.Size([7, 1, 512, 512])
+label batch:tensor([128, 129, 130, 131, 132, 133, 134])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([0, 1, 2, 3, 4, 5, 6, 7])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 8,  9, 10, 11, 12, 13, 14, 15])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([16, 17, 18, 19, 20, 21, 22, 23])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([24, 25, 26, 27, 28, 29, 30, 31])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([32, 33, 34, 35, 36, 37, 38, 39])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([40, 41, 42, 43, 44, 45, 46, 47])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([48, 49, 50, 51, 52, 53, 54, 55])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([56, 57, 58, 59, 60, 61, 62, 63])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([64, 65, 66, 67, 68, 69, 70, 71])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([72, 73, 74, 75, 76, 77, 78, 79])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([80, 81, 82, 83, 84, 85, 86, 87])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([88, 89, 90, 91, 92, 93, 94, 95])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 96,  97,  98,  99, 100, 101, 102, 103])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([104, 105, 106, 107, 108, 109, 110, 111])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([112, 113, 114, 115, 116, 117, 118, 119])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([120, 121, 122, 123, 124, 125, 126, 127])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([128, 129, 130, 131, 132, 133, 134, 135])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([136, 137, 138, 139, 140, 141, 142, 143])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([144,   0,   1,   2,   3,   4,   5,   6])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 7,  8,  9, 10, 11, 12, 13, 14])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([15, 16, 17, 18, 19, 20, 21, 22])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([23, 24, 25, 26, 27, 28, 29, 30])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([31, 32, 33, 34, 35, 36, 37, 38])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([39, 40, 41, 42, 43, 44, 45, 46])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([47, 48, 49, 50, 51, 52, 53, 54])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([55, 56, 57, 58, 59, 60, 61, 62])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([63, 64, 65, 66, 67, 68, 69, 70])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([71, 72, 73, 74, 75, 76, 77, 78])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([79, 80, 81, 82, 83, 84, 85, 86])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([87, 88, 89, 90, 91, 92, 93, 94])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 95,  96,  97,  98,  99, 100, 101, 102])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([103, 104, 105, 106, 107, 108, 109, 110])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([111, 112, 113, 114, 115, 116, 117, 118])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([119, 120, 121, 122, 123, 124, 125, 126])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([127, 128, 129, 130, 131, 132, 133, 134])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([135, 136, 137, 138, 139, 140, 141, 142])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([143, 144, 145, 146, 147,   0,   1,   2])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 3,  4,  5,  6,  7,  8,  9, 10])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([11, 12, 13, 14, 15, 16, 17, 18])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([19, 20, 21, 22, 23, 24, 25, 26])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([27, 28, 29, 30, 31, 32, 33, 34])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([35, 36, 37, 38, 39, 40, 41, 42])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([43, 44, 45, 46, 47, 48, 49, 50])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([51, 52, 53, 54, 55, 56, 57, 58])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([59, 60, 61, 62, 63, 64, 65, 66])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([67, 68, 69, 70, 71, 72, 73, 74])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([75, 76, 77, 78, 79, 80, 81, 82])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([83, 84, 85, 86, 87, 88, 89, 90])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([91, 92, 93, 94, 95, 96, 97, 98])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 99, 100, 101, 102, 103, 104, 105, 106])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([107, 108, 109, 110, 111, 112, 113, 114])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([115, 116, 117, 118, 119, 120, 121, 122])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([123, 124, 125, 126, 127, 128, 129, 130])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([131, 132, 133, 134, 135, 136, 137, 138])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([139, 140, 141, 142, 143, 144, 145, 146])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([147, 148, 149,   0,   1,   2,   3,   4])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 5,  6,  7,  8,  9, 10, 11, 12])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([13, 14, 15, 16, 17, 18, 19, 20])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([21, 22, 23, 24, 25, 26, 27, 28])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([29, 30, 31, 32, 33, 34, 35, 36])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([37, 38, 39, 40, 41, 42, 43, 44])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([45, 46, 47, 48, 49, 50, 51, 52])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([53, 54, 55, 56, 57, 58, 59, 60])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([61, 62, 63, 64, 65, 66, 67, 68])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([69, 70, 71, 72, 73, 74, 75, 76])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([77, 78, 79, 80, 81, 82, 83, 84])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([85, 86, 87, 88, 89, 90, 91, 92])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 93,  94,  95,  96,  97,  98,  99, 100])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([101, 102, 103, 104, 105, 106, 107, 108])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([109, 110, 111, 112, 113, 114, 115, 116])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([117, 118, 119, 120, 121, 122, 123, 124])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([125, 126, 127, 128, 129, 130, 131, 132])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([0, 1, 2, 3, 4, 5, 6, 7])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 8,  9, 10, 11, 12, 13, 14, 15])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([16, 17, 18, 19, 20, 21, 22, 23])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([24, 25, 26, 27, 28, 29, 30, 31])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([32, 33, 34, 35, 36, 37, 38, 39])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([40, 41, 42, 43, 44, 45, 46, 47])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([48, 49, 50, 51, 52, 53, 54, 55])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([56, 57, 58, 59, 60, 61, 62, 63])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([64, 65, 66, 67, 68, 69, 70, 71])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([72, 73, 74, 75, 76, 77, 78, 79])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([80, 81, 82, 83, 84, 85, 86, 87])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([88, 89, 90, 91, 92, 93, 94, 95])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([ 96,  97,  98,  99, 100, 101, 102, 103])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([104, 105, 106, 107, 108, 109, 110, 111])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([112, 113, 114, 115, 116, 117, 118, 119])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([120, 121, 122, 123, 124, 125, 126, 127])
+
+image batch:torch.Size([7, 1, 512, 512])
+label batch:tensor([128, 129, 130, 131, 132, 133, 134])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([41, 42, 43, 44, 45, 46, 47, 48])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([49, 50, 41, 42, 43, 44, 45, 46])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([47, 48, 49, 50, 41, 42, 43, 44])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([45, 46, 47, 48, 49, 50, 41, 42])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([43, 44, 45, 46, 47, 48, 49, 50])
+
+image batch:torch.Size([8, 1, 512, 512])
+label batch:tensor([41, 42, 43, 44, 45, 46, 47, 48])
+
+image batch:torch.Size([2, 1, 512, 512])
+label batch:tensor([49, 50])
+
