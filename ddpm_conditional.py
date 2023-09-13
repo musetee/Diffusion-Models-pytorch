@@ -49,6 +49,7 @@ class Diffusion:
         sqrt_alpha_hat = torch.sqrt(self.alpha_hat[t])[:, None, None, None]
         sqrt_one_minus_alpha_hat = torch.sqrt(1 - self.alpha_hat[t])[:, None, None, None]
         Ɛ = torch.randn_like(x)
+
         return sqrt_alpha_hat * x + sqrt_one_minus_alpha_hat * Ɛ, Ɛ
     
     @torch.inference_mode()
@@ -111,7 +112,7 @@ class Diffusion:
 
     def log_images(self):
         "Log images to wandb and save them to disk"
-        labels = torch.tensor([100,101,102,103,104]).long().to(self.device) #torch.arange(self.num_classes).long().to(self.device) # 0,1,2,3......149 
+        labels = torch.tensor([0,1,2,3,4]).long().to(self.device) #torch.arange(self.num_classes).long().to(self.device) # 0,1,2,3......149 
         sampled_images = self.sample(use_ema=False, labels=labels)
         wandb.log({"sampled_images":     [wandb.Image(img.permute(1,2,0).squeeze().cpu().numpy()) for img in sampled_images]})
 
@@ -148,10 +149,12 @@ class Diffusion:
         manual_crop=args.manual_crop
         train_batch_size=args.train_batch_size
         val_batch_size=args.val_batch_size
+        pad=args.pad
         self.train_dataloader, self.val_dataloader = get_dataset(data_pelvis_path, 
                                                                 train_number, 
                                                                 val_number, 
                                                                 normalize, 
+                                                                pad,
                                                                 resized_size, 
                                                                 div_size, 
                                                                 center_crop,
@@ -165,11 +168,24 @@ class Diffusion:
         self.ema = EMA(0.995)
         self.scaler = torch.cuda.amp.GradScaler()
 
-    def testdata(self):
+    def testdata(self, output_for_check=0,save_folder='test_images'):
+        from PIL import Image
         for i, (images, labels) in enumerate(self.train_dataloader):
             print(i, ' image: ',images.shape)
             print(i, ' label: ',labels.shape)
-            break
+            os.makedirs(save_folder,exist_ok=True)
+            if output_for_check == 1:
+                # save images to file
+                for j in range(images.shape[0]):
+                    img = images[j,:,:,:]
+                    img = img.permute(1,2,0).squeeze().cpu().numpy()
+                    img = (img * 255).astype(np.uint8)
+                    img = Image.fromarray(img)
+                    img.save(f'{save_folder}/'+str(i)+'_'+str(j)+'.png')
+            with open(f'{save_folder}/parameter.txt', 'a') as f:
+                f.write('image batch:' + str(images.shape)+'\n')
+                f.write('label batch:' + str(labels)+'\n')
+                f.write('\n')
 
     def fit(self, args):
         for epoch in progress_bar(range(args.epochs), total=args.epochs, leave=False):
@@ -230,7 +246,7 @@ if __name__ == '__main__':
         run_name = "DDPM_conditional",
         epochs = 100,
         noise_steps=1000,
-        seed = 10,
+        seed = 152,
         #batch_size = 10,
         img_size = 512,
         num_classes = 10, #152, # the maximum slices number of all patient data
@@ -244,13 +260,14 @@ if __name__ == '__main__':
         log_every_epoch = 5,
         num_workers=0,
         lr = 5e-3,
-        train_number=2,
+        train_number=10,
         val_number=1,
-        normalize='zscore',
+        normalize='minmax',
+        pad='minimum',
         div_size=16,
         center_crop=0,
-        manual_crop=[41,50],
-        train_batch_size=1,
+        manual_crop=[41,50], #41,50
+        train_batch_size=4,
         val_batch_size=1)
     parse_args(config)
 
@@ -258,10 +275,13 @@ if __name__ == '__main__':
     set_seed(config.seed)
 
     diffuser = Diffusion(config.noise_steps, img_size=config.img_size, num_classes=config.num_classes, device=config.device)
-
+    diffuser.prepare(config)
+    diffuser.testdata(output_for_check=1)
+    '''
     with wandb.init(project="train_sd", group="train_crop", config=config):
         diffuser.prepare(config)
-        diffuser.fit(config)
+        #diffuser.fit(config)
         model_cpkt_path = r'F:\yang_Projects\Diffusion-Models-pytorch\models\DDPM_conditional_1'
         epoch_i =99
         #diffuser.test(model_cpkt_path, epoch_i)
+    '''
