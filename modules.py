@@ -129,7 +129,7 @@ class Up(nn.Module):
 
 
 class UNet(nn.Module):
-    def __init__(self, c_in=3, c_out=3, time_dim=256, depth=16, remove_deep_conv=False):
+    def __init__(self, c_in=3, c_out=3, time_dim=256, depth=32, remove_deep_conv=False):
         super().__init__()
         self.time_dim = time_dim
         #ensrue time_dim is divisible by 8
@@ -142,9 +142,9 @@ class UNet(nn.Module):
         self.remove_deep_conv = remove_deep_conv
         self.inc = DoubleConv(c_in, depth_8) # [B, depth_8, img_size, img_size]
         self.down1 = Down(depth_8, depth_4, emb_dim=time_dim) # [B, depth_4, img_size/2, img_size/2]
-        #self.sa1 = SelfAttention(depth_4) #128
+        self.sa1 = SelfAttention(depth_4) #128
         self.down2 = Down(depth_4, depth_2, emb_dim=time_dim) # [B, depth_2, img_size/4, img_size/4]
-        #self.sa2 = SelfAttention(depth_2) #256
+        self.sa2 = SelfAttention(depth_2) #256
         self.down3 = Down(depth_2, depth_2, emb_dim=time_dim) # [B, depth_2, img_size/8, img_size/8]
         self.sa3 = SelfAttention(depth_2) #256
 
@@ -160,9 +160,9 @@ class UNet(nn.Module):
         self.up1 = Up(depth, depth_4, emb_dim=time_dim) # [B, depth_4, img_size/4, img_size/4]
         self.sa4 = SelfAttention(depth_4) #128
         self.up2 = Up(depth_2, depth_8, emb_dim=time_dim) # [B, depth_8, img_size/2, img_size/2]
-        #self.sa5 = SelfAttention(depth_8) #64
+        self.sa5 = SelfAttention(depth_8) #64
         self.up3 = Up(depth_4, depth_8, emb_dim=time_dim) # [B, depth_8, img_size, img_size]
-        #self.sa6 = SelfAttention(depth_8) #64
+        self.sa6 = SelfAttention(depth_8) #64
         self.outc = nn.Conv2d(depth_8, c_out, kernel_size=1)
 
     def pos_encoding(self, t, channels):

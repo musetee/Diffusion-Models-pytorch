@@ -28,7 +28,8 @@ def setupdata(args):
     #dataloader = get_data(args)
     dataset_path=args.dataset_path
     train_volume_ds,_,train_loader,val_loader,_ = myslicesloader(dataset_path,
-                    normalize='zscore',
+                    normalize=args.normalize,
+                    pad=args.pad,
                     train_number=args.train_number,
                     val_number=args.val_number,
                     train_batch_size=args.batch_size,
@@ -203,6 +204,27 @@ class DiffusionModel:
                     
             total_time = time.time() - total_start
             print(f"train completed, total time: {total_time}.")
+    
+    def testdata(self, train_loader, output_for_check=0,save_folder='test_images'):
+        from PIL import Image
+        for i, data in enumerate(train_loader):
+            images=data['image']
+            labels=data['label']
+            print(i, ' image: ',images.shape)
+            print(i, ' label: ',labels.shape)
+            os.makedirs(save_folder,exist_ok=True)
+            if output_for_check == 1:
+                # save images to file
+                for j in range(images.shape[0]):
+                    img = images[j,:,:,:]
+                    img = img.permute(1,2,0).squeeze().cpu().numpy()
+                    img = (img * 255).astype(np.uint8)
+                    img = Image.fromarray(img)
+                    img.save(f'{save_folder}/'+str(i)+'_'+str(j)+'.png')
+            with open(f'{save_folder}/parameter.txt', 'a') as f:
+                f.write('image batch:' + str(images.shape)+'\n')
+                f.write('label batch:' + str(labels.shape)+'\n')
+                f.write('\n')
 
     def plotchain(self):
         device = self.device
@@ -231,10 +253,12 @@ if __name__ == "__main__":
     set_determinism(42)
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run_name", type=str, default="DDPM_test")
+    parser.add_argument("--run_name", type=str, default="DDPM_monai0912")
     parser.add_argument("--n_epochs", type=int, default=50) 
     parser.add_argument("--val_interval", type=int, default=5)
-    parser.add_argument("--train_number", type=int, default=2)
+    parser.add_argument("--train_number", type=int, default=170)
+    parser.add_argument("--normalize", type=str, default="minmax")
+    parser.add_argument("--pad", type=str, default="minimum")
     parser.add_argument("--val_number", type=int, default=1)
     parser.add_argument("--center_crop", type=int, default=20)
     parser.add_argument("--batch_size", type=int, default=4)
@@ -247,7 +271,7 @@ if __name__ == "__main__":
     # r"F:\yang_Projects\Datasets\Task1\pelvis" 
     # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" 
     # r"D:\Projects\data\Task1\pelvis" 
-    parser.add_argument("--GPU_ID", type=int, default=1)
+    parser.add_argument("--GPU_ID", type=int, default=0)
 
     args = parser.parse_args()
     args.device = f'cuda:{args.GPU_ID}' if torch.cuda.is_available() else 'cpu' # 0=TitanXP, 1=P5000
@@ -256,5 +280,7 @@ if __name__ == "__main__":
     os.makedirs(f'./models/{args.run_name}',exist_ok=True)
     train_loader,batch_number,val_loader=setupdata(args)
     #checkdata(train_loader)
+
     Diffuser=DiffusionModel(args)
+    #Diffuser.testdata(train_loader=train_loader,output_for_check=1,save_folder='results/test_images')
     Diffuser.train(args,train_loader,batch_number,val_loader)
