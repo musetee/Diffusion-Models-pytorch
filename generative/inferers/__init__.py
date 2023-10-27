@@ -11,4 +11,4 @@
 
 from __future__ import annotations
 
-from .inferer import DiffusionInferer, LatentDiffusionInferer, VQVAETransformerInferer
+from .inferer import DiffusionInferer, transformDiffusionInferer, LatentDiffusionInferer, VQVAETransformerInferer
