@@ -443,7 +443,6 @@ if __name__ == "__main__":
     parser.add_argument("--num_train_timesteps", type=int, default=1000)
     parser.add_argument("--num_inference_steps", type=int, default=1000)
     parser.add_argument("--dataset_path", type=str, default=r"F:\yang_Projects\Datasets\Task1\pelvis")
-
     # r"F:\yang_Projects\Datasets\Task1\pelvis" 
     # r"C:\Users\56991\Projects\Datasets\Task1\pelvis" 
     # r"D:\Projects\data\Task1\pelvis" 
