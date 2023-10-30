@@ -51,8 +51,9 @@ def setupdata(args):
     slice_number,batch_number =len_patchloader(train_volume_ds,args.batch_size)
     return train_loader,batch_number,val_loader,train_transforms
 
-def checkdata(train_loader,output_for_check=0,save_folder='test_images'):
+def checkdata(loader,output_for_check=0,save_folder='test_images'):
     '''
+    
     check_data = first(train_loader)
     check_image=check_data['label']
     print(f"batch shape: {check_image.shape}")
@@ -65,9 +66,22 @@ def checkdata(train_loader,output_for_check=0,save_folder='test_images'):
     plt.show()
     '''
     from PIL import Image
-    for i, (images, labels) in enumerate(train_loader):
-        print(i, ' image: ',images.shape)
-        print(i, ' label: ',labels.shape)
+    import matplotlib
+    matplotlib.use('Qt5Agg')
+    for i, batch in enumerate(loader):
+        images = batch["image"]
+        labels = batch["label"]
+            
+        fig = plt.figure(figsize=(8, 8))
+        for j in range(images.shape[0]):
+            img = images[j,:,:,:]
+            img = img.permute(1,2,0).squeeze().cpu().numpy()
+            img = (img * 255).astype(np.uint8)
+            ax = fig.add_subplot(4, 4, j + 1)
+            ax.imshow(img, cmap='gray')
+            ax.axis('off')
+            plt.show()
+        '''
         os.makedirs(save_folder,exist_ok=True)
         if output_for_check == 1:
             # save images to file
@@ -77,11 +91,14 @@ def checkdata(train_loader,output_for_check=0,save_folder='test_images'):
                 img = (img * 255).astype(np.uint8)
                 img = Image.fromarray(img)
                 img.save(f'{save_folder}/'+str(i)+'_'+str(j)+'.png')
+        
+        '''
+        '''
         with open(f'{save_folder}/parameter.txt', 'a') as f:
             f.write('image batch:' + str(images.shape)+'\n')
             f.write('label batch:' + str(labels)+'\n')
             f.write('\n')
-
+        '''
 
 import torch.nn as nn
 def weights_init(m):
@@ -221,23 +238,24 @@ class DiffusionModel:
                     model.eval()
                     val_epoch_loss = 0
                     for step, batch in enumerate(val_loader):
-                        images = batch["image"].to(device)
-                        labels = batch["label"].to(device)
-                        with torch.no_grad():
-                            with autocast(enabled=True):
-                                noise = torch.randn_like(images).to(device)
-                                #noise_extra_channel = torch.cat((noise,labels),1)
-                                timesteps = torch.randint(
-                                    0, inferer.scheduler.num_train_timesteps, (images.shape[0],), device=images.device
-                                ).long()
-                                noise_pred = inferer(inputs=images, orig_image=labels, diffusion_model=model, noise=noise, timesteps=timesteps)
-                                val_loss = F.mse_loss(noise_pred.float(), noise.float())
-
-                        val_epoch_loss += val_loss.item()
-                        progress_bar.set_postfix({"val_loss": val_epoch_loss / (step + 1)})
+                        if step > 50 and step <53:
+                            images = batch["image"].to(device)
+                            labels = batch["label"].to(device)
+                            with torch.no_grad():
+                                with autocast(enabled=True):
+                                    noise = torch.randn_like(images).to(device)
+                                    #noise_extra_channel = torch.cat((noise,labels),1)
+                                    timesteps = torch.randint(
+                                        0, inferer.scheduler.num_train_timesteps, (images.shape[0],), device=images.device
+                                    ).long()
+                                    noise_pred = inferer(inputs=images, orig_image=labels, diffusion_model=model, noise=noise, timesteps=timesteps)
+                                    val_loss = F.mse_loss(noise_pred.float(), noise.float())
+                                    image_loss,_,_ = self._sample(model,images,labels, inferer,scheduler,epoch,step=step, device=device)
+                            
+                            val_epoch_loss += val_loss.item()
+                            progress_bar.set_postfix({"val_loss": val_epoch_loss / (step + 1)})
                     val_epoch_loss_list.append(val_epoch_loss / (step + 1))
                     logger.add_scalar("val_epoch_loss", val_epoch_loss / (step + 1), global_step=epoch)
-                    image_loss,_ = self._sample(model,images,labels, inferer,scheduler,epoch, device)
                     logger.add_scalar("img_epoch_loss", image_loss, global_step=epoch)
             total_time = time.time() - total_start
             print(f"train completed, total time: {total_time}.")
@@ -255,8 +273,9 @@ class DiffusionModel:
             image = inferer.sample(input_noise=noise, orig_image=labels_single, diffusion_model=model, scheduler=scheduler)
         image_loss = F.mse_loss(image,images_single)
         saved_name=os.path.join(self.saved_results_name,f"{epoch}_{step}.jpg")
-        #print(image.shape)
+
         #image = (image.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
+        #image = image * 255
         #image = (image * 255).type(torch.uint8)
         
         images_single = images_single.detach().cpu()
@@ -286,7 +305,7 @@ class DiffusionModel:
             labels = batch["label"].to(device)
             image_loss,image,_ = self._sample(model,images,labels, inferer,scheduler,epoch, device)
 
-            print("img_epoch_loss", image_loss, global_step=epoch)
+            print("img_epoch_loss", image_loss, "global_step:", epoch)
             total_time = time.time() - total_start
             print(f"train completed, total time: {total_time}.")
 
@@ -359,7 +378,7 @@ class DiffusionModel:
         
         # Create a NIfTI image object
         reversed_image = torch.squeeze(reversed_image.detach().cpu()).numpy()
-        reversed_image = np.rot90(reversed_image, axes=(0, 1), k=3)
+        reversed_image = np.rot90(reversed_image, axes=(0, 1), k=2)
         nifti_img = nib.Nifti1Image(reversed_image, affine=np.eye(4))  # You can customize the affine transformation matrix if needed
         # Save the NIfTI image to a file
         output_file_name = output_file + '.nii.gz'
@@ -461,7 +480,8 @@ if __name__ == "__main__":
         #Diffuser.testdata(train_loader=train_loader,output_for_check=1,save_folder='results/test_images')
         Diffuser.train(args,train_loader,batch_number,val_loader)
     elif args.mode == "checkdata":
-        checkdata(train_loader)
+        #checkdata(train_loader)
+        checkdata(val_loader)
     elif args.mode == "test":
         Diffuser=DiffusionModel(args)
         #Diffuser.testdata(train_loader=train_loader,output_for_check=1,save_folder='results/test_images')
