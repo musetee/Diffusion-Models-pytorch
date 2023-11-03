@@ -161,7 +161,6 @@ class DiffusionModel:
         self.saved_runs_name=f'./logs/{args.run_name}/runs'
         os.makedirs(self.saved_results_name, exist_ok=True)
         os.makedirs(self.saved_models_name, exist_ok=True)
-
     def _train(images, labels, model, inferer, optimizer,scaler,logger,epoch,step,device):
         # the process inside one epoch loop
         with autocast(enabled=True):
