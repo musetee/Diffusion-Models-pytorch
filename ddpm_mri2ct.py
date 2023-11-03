@@ -492,7 +492,7 @@ if __name__ == "__main__":
     parser.add_argument("--pad", type=str, default="minimum")
     parser.add_argument("--val_number", type=int, default=1)
     parser.add_argument("--center_crop", type=int, default=20) # set to 0 or -1 means no cropping
-    parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--batch_size", type=int, default=2)
     parser.add_argument("--image_size", type=int, default=512)
     parser.add_argument("--pretrained_path", type=str, default=None)
     parser.add_argument("--lr", type=float, default=2.5e-5)
@@ -505,7 +505,7 @@ if __name__ == "__main__":
     parser.add_argument("--GPU_ID", type=int, default=0)
 
     args = parser.parse_args()
-    args.device = f'cuda:{args.GPU_ID}' if torch.cuda.is_available() else 'cpu' # 0=TitanXP, 1=P5000
+    args.device = f'cuda:{args.GPU_ID}' if torch.cuda.is_available() else 'cpu'
     print(torch.cuda.get_device_name(args.GPU_ID))
     train_loader,batch_number,val_loader,train_transforms=setupdata(args)
     logs_name=f'./logs/{args.run_name}'	
