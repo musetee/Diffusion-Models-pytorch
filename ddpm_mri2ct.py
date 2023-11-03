@@ -50,28 +50,54 @@ def setupdata(args):
                     ifcheck_sclices=False,)
     slice_number,batch_number =len_patchloader(train_volume_ds,args.batch_size)
     return train_loader,batch_number,val_loader,train_transforms
-
-def checkdata(loader,output_for_check=0,save_folder='test_images'):
-    '''
-    
-    check_data = first(train_loader)
-    check_image=check_data['label']
-    print(f"batch shape: {check_image.shape}")
-    #batch_size=check_image.shape[0]
-    i=0
-    plt.figure(f"image {i}", (6, 6))
-    plt.imshow(check_image[i,0], vmin=0, vmax=1, cmap="gray")
-    plt.axis("off")
-    plt.tight_layout()
-    plt.show()
-    '''
+def checkdata(loader,inputtransforms,output_for_check=1,save_folder='./logs/test_images'):
     from PIL import Image
     import matplotlib
     matplotlib.use('Qt5Agg')
     for i, batch in enumerate(loader):
         images = batch["image"]
         labels = batch["label"]
-            
+        images=images[:,:,:,:,None]
+        try:
+            volume=torch.cat((volume,images),-1)
+        except:
+            volume=images
+
+    volume = volume[0,:,:,:,:] #(B,C,H,W,D)    
+    # the input into reverse transform should be in form: 20 is the cropped depth
+    # (1, 512, 512, 20) -> (1, 452, 315, 5) C,H,W,D
+    print (volume.shape)
+    val_output_dict = {"image": volume}
+    with allow_missing_keys_mode(inputtransforms):
+        reversed_images_dict=inputtransforms.inverse(val_output_dict)
+    images=reversed_images_dict["image"]
+
+    for i in range(images.shape[0]):
+        print(images.shape)
+        imgformat='png'
+        dpi=300
+        os.makedirs(save_folder,exist_ok=True)
+        if output_for_check == 1:
+            # save images to file
+            for j in range(images.shape[-1]):
+                saved_name=os.path.join(save_folder,f"{i}_{j}.{imgformat}")
+                img = images[:,:,:,j]
+                #img =img.squeeze().cpu().numpy()
+                img = img.permute(1,2,0).squeeze().cpu().numpy()
+                img = (img * 255).astype(np.uint8)
+                img = Image.fromarray(img)
+                #img.save(saved_name)
+
+                fig_ct = plt.figure()
+                plt.gca().set_axis_off()
+                plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0,
+                            hspace = 0, wspace = 0)
+                plt.margins(0,0)
+                plt.imshow(img, cmap='gray') #.squeeze()
+                plt.savefig(saved_name.replace(f'.{imgformat}',f'_ct.{imgformat}'), format=f'{imgformat}'
+                            , bbox_inches='tight', pad_inches=0, dpi=dpi)
+                plt.close(fig_ct)
+        '''
         fig = plt.figure(figsize=(8, 8))
         for j in range(images.shape[0]):
             img = images[j,:,:,:]
@@ -81,19 +107,6 @@ def checkdata(loader,output_for_check=0,save_folder='test_images'):
             ax.imshow(img, cmap='gray')
             ax.axis('off')
             plt.show()
-        '''
-        os.makedirs(save_folder,exist_ok=True)
-        if output_for_check == 1:
-            # save images to file
-            for j in range(images.shape[0]):
-                img = images[j,:,:,:]
-                img = img.permute(1,2,0).squeeze().cpu().numpy()
-                img = (img * 255).astype(np.uint8)
-                img = Image.fromarray(img)
-                img.save(f'{save_folder}/'+str(i)+'_'+str(j)+'.png')
-        
-        '''
-        '''
         with open(f'{save_folder}/parameter.txt', 'a') as f:
             f.write('image batch:' + str(images.shape)+'\n')
             f.write('label batch:' + str(labels)+'\n')
@@ -107,7 +120,6 @@ def weights_init(m):
     if isinstance(m, nn.BatchNorm2d):
         torch.nn.init.normal_(m.weight, 0.0, 0.02)
         torch.nn.init.constant_(m.bias, 0)
-
 def load_pretrained_model(model, opt, pretrained_path=None):
     if pretrained_path is not None:
         latest_ckpt=pretrained_path
@@ -172,7 +184,6 @@ class DiffusionModel:
         scaler.update()
         epoch_loss += loss.item()
         logger.add_scalar("train_loss_MSE", loss.item(), global_step=epoch * batch_number + step)
-
     def train(self,args,train_loader,batch_number ,val_loader):
         use_pretrained = False
         device = self.device
@@ -199,8 +210,8 @@ class DiffusionModel:
                 progress_bar = tqdm(enumerate(train_loader), total=batch_number, ncols=70)
                 progress_bar.set_description(f"Epoch {epoch}")
                 for step, batch in progress_bar:
-                    images = batch["image"].to(device)
-                    labels = batch["label"].to(device)
+                    images = batch["image"].to(device) # CT image
+                    labels = batch["label"].to(device) # MRI image
                     optimizer.zero_grad(set_to_none=True)
 
                     with autocast(enabled=True):
@@ -239,76 +250,79 @@ class DiffusionModel:
                     val_epoch_loss = 0
                     for step, batch in enumerate(val_loader):
                         if step > 50 and step <53:
-                            images = batch["image"].to(device)
-                            labels = batch["label"].to(device)
+                            targets = batch["image"].to(device) # CT image
+                            labels = batch["label"].to(device) # MRI image
                             with torch.no_grad():
                                 with autocast(enabled=True):
-                                    noise = torch.randn_like(images).to(device)
+                                    noise = torch.randn_like(targets).to(device)
                                     #noise_extra_channel = torch.cat((noise,labels),1)
                                     timesteps = torch.randint(
-                                        0, inferer.scheduler.num_train_timesteps, (images.shape[0],), device=images.device
+                                        0, inferer.scheduler.num_train_timesteps, (targets.shape[0],), device=targets.device
                                     ).long()
-                                    noise_pred = inferer(inputs=images, orig_image=labels, diffusion_model=model, noise=noise, timesteps=timesteps)
+                                    noise_pred = inferer(inputs=targets, orig_image=labels, diffusion_model=model, noise=noise, timesteps=timesteps)
                                     val_loss = F.mse_loss(noise_pred.float(), noise.float())
-                                    image_loss,_,_ = self._sample(model,images,labels, inferer,scheduler,epoch,step=step, device=device)
-                            
+                                    image_loss,_,_ = self._sample(model,
+                                                                  targets=targets,
+                                                                  inputs=labels, 
+                                                                  inferer=inferer,
+                                                                  scheduler=scheduler,
+                                                                  epoch=epoch,step=step, 
+                                                                  device=device)
                             val_epoch_loss += val_loss.item()
                             progress_bar.set_postfix({"val_loss": val_epoch_loss / (step + 1)})
                     val_epoch_loss_list.append(val_epoch_loss / (step + 1))
                     logger.add_scalar("val_epoch_loss", val_epoch_loss / (step + 1), global_step=epoch)
                     logger.add_scalar("img_epoch_loss", image_loss, global_step=epoch)
             total_time = time.time() - total_start
-            print(f"train completed, total time: {total_time}.")
-    
-    def _sample(self, model,images,labels, inferer,scheduler,epoch,step=0, device="cuda", i=0, save_imgs=True):
+            print(f"train completed, total time: {total_time}.")    
+    def _sample(self, model,
+                targets, inputs, 
+                inferer, scheduler,
+                epoch, step=0, 
+                device="cuda", i=0, 
+                save_imgs=True):
         # Sampling
-        noise = torch.randn((1, images.shape[1], images.shape[2], images.shape[3])) # B,C,H,W
+        # targets: CT image, which is  the target
+        # inputs: MRI image, which is to be converted to CT image
+        noise = torch.randn((1, targets.shape[1], targets.shape[2], targets.shape[3])) # B,C,H,W
         noise = noise.to(device)
         scheduler.set_timesteps(num_inference_steps=args.num_inference_steps)
-        labels_single = labels[i,:,:,:]
-        labels_single = labels_single[None,:,:,:]
-        images_single = images[i,:,:,:]
-        images_single = images_single[None,:,:,:]                    
-        with autocast(enabled=True):
-            image = inferer.sample(input_noise=noise, orig_image=labels_single, diffusion_model=model, scheduler=scheduler)
-        image_loss = F.mse_loss(image,images_single)
-        saved_name=os.path.join(self.saved_results_name,f"{epoch}_{step}.jpg")
 
+        targets_single = targets[i,:,:,:]
+        targets_single = targets_single[None,:,:,:]                
+        inputs_single = inputs[i,:,:,:]
+        inputs_single = inputs_single[None,:,:,:]
+       
+        with autocast(enabled=True):
+            image = inferer.sample(input_noise=noise, input_image=inputs_single, diffusion_model=model, scheduler=scheduler)
+        image_loss = F.mse_loss(image,targets_single)
+        saved_name=os.path.join(self.saved_results_name,f"{epoch}_{step}.jpg")
+        '''
         #image = (image.clamp(-1, 1) + 1) / 2 # [-1, 1] -> [0, 1]
         #image = image * 255
         #image = (image * 255).type(torch.uint8)
         
-        images_single = images_single.detach().cpu()
+        # if z-score normalization is used, then the image should be converted back to the original range
+        from monai.transforms import (
+        Compose, NormalizeIntensity)
+        normtransform = Compose(
+            [NormalizeIntensity(nonzero=False, channel_wise=True)]
+            )
+        image.applied_operations = targets_single.applied_operations
+        with allow_missing_keys_mode(normtransform):
+            image=normtransform.inverse(image)
+        '''
+        targets_single = targets_single.detach().cpu()
+        inputs_single = inputs_single.detach().cpu()
         image = image.detach().cpu()
-        labels_single = labels_single.detach().cpu()
+
         if save_imgs:                         
-            compare_imgs(labels_single, images_single,image,saved_name)
-        return image_loss,image,images_single
-
-    def test(self, args, val_loader):
-        use_pretrained = False
-        device = self.device
-        model = self.model
-        scheduler = self.scheduler
-        optimizer = self.optimizer
-        inferer = self.inferer
-        if use_pretrained:
-            model = torch.hub.load("marksgraham/pretrained_generative_models:v0.2", model="ddpm_2d", verbose=True).to(device)
-        else:
-            model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
-
-            total_start = time.time()
-            epoch = init_epoch + 1
-            model.eval()
-            batch = next(iter(val_loader))
-            images = batch["image"].to(device)
-            labels = batch["label"].to(device)
-            image_loss,image,_ = self._sample(model,images,labels, inferer,scheduler,epoch, device)
-
-            print("img_epoch_loss", image_loss, "global_step:", epoch)
-            total_time = time.time() - total_start
-            print(f"train completed, total time: {total_time}.")
-
+            compare_imgs(input_imgs=inputs_single, 
+                         target_imgs=targets_single,
+                         fake_imgs=image,
+                         saved_name=saved_name)
+            
+        return image_loss,image,targets_single  
     def _test_nifti(self, args, val_loader, val_transforms):
         import nibabel as nib
         device = self.device
@@ -333,17 +347,16 @@ class DiffusionModel:
         metric_sum=0
         for step, batch in enumerate(val_loader):
             print(step)
-            images = batch["image"].to(device)
-            labels = batch["label"].to(device)
-            print("original image shape:", images.shape)
-            image_loss, generated_image,orig_image = self._sample(model, 
-                                                                images, 
-                                                                labels, 
-                                                                inferer,
-                                                                scheduler,
-                                                                epoch, step, 
-                                                                device,
-                                                                0,
+            targets = batch["image"].to(device) # CT image
+            inputs = batch["label"].to(device) # MRI image
+            print("original image shape:", targets.shape)
+            image_loss, generated_image,orig_image = self._sample(model=model, 
+                                                                targets=targets, 
+                                                                inputs=inputs, 
+                                                                inferer=inferer,
+                                                                scheduler=scheduler,
+                                                                epoch=epoch, step=step, 
+                                                                device=device, i=0,
                                                                 save_imgs=True) # 0 because val_loader batch_size=1
             val_metrices, infer_log_file = val_log(epoch, step, generated_image, orig_image, self.saved_logs_name)
             #if val_metrices['ssim']>0.3:
@@ -367,11 +380,14 @@ class DiffusionModel:
             print("unsqueezed image shape:", generated_image.shape)
             image_losses.append(image_loss)
             try:
-                image_volume=torch.cat((image_volume,generated_image),-1)
+                image_volume=torch.cat((image_volume,generated_image),-1)#pay attention to the order!
             except:
                 image_volume=generated_image
         
-        reversed_image = reverse_transforms(image_volume, images, val_transforms)
+        reversed_image = reverse_transforms(output_images=image_volume, 
+                                            orig_images=inputs, # output reverse should according to the original inputs MRI
+                                            transforms=val_transforms) 
+        
         #reversed_image = reversed_image.unsqueeze(0)
         #print("reversed image shape:", reversed_image.shape)
         #SaveImage(output_dir=output_file, resample=True)(reversed_image.detach().cpu())
@@ -397,28 +413,49 @@ class DiffusionModel:
         total_time = time.time() - total_start
         print(f"train completed, total time: {total_time}.")
         '''
+    def test(self, args, val_loader):
+        use_pretrained = False
+        device = self.device
+        model = self.model
+        scheduler = self.scheduler
+        optimizer = self.optimizer
+        inferer = self.inferer
+        if use_pretrained:
+            model = torch.hub.load("marksgraham/pretrained_generative_models:v0.2", model="ddpm_2d", verbose=True).to(device)
+        else:
+            model, optimizer, init_epoch = load_pretrained_model(model, optimizer, args.pretrained_path)
 
+            total_start = time.time()
+            epoch = init_epoch + 1
+            model.eval()
+            batch = next(iter(val_loader))
+            images = batch["image"].to(device)
+            inputs = batch["label"].to(device)
+            image_loss,image,_ = self._sample(model,images,inputs, inferer,scheduler,epoch, device)
+
+            print("img_epoch_loss", image_loss, "global_step:", epoch)
+            total_time = time.time() - total_start
+            print(f"train completed, total time: {total_time}.")
     def testdata(self, train_loader, output_for_check=0,save_folder='test_images'):
         from PIL import Image
         for i, data in enumerate(train_loader):
-            images=data['image']
-            labels=data['label']
-            print(i, ' image: ',images.shape)
-            print(i, ' label: ',labels.shape)
+            targets=data['image']
+            inputs=data['label']
+            print(i, ' image: ',targets.shape)
+            print(i, ' label: ',inputs.shape)
             os.makedirs(save_folder,exist_ok=True)
             if output_for_check == 1:
                 # save images to file
-                for j in range(images.shape[0]):
-                    img = images[j,:,:,:]
+                for j in range(targets.shape[0]):
+                    img = targets[j,:,:,:]
                     img = img.permute(1,2,0).squeeze().cpu().numpy()
                     img = (img * 255).astype(np.uint8)
                     img = Image.fromarray(img)
                     img.save(f'{save_folder}/'+str(i)+'_'+str(j)+'.png')
             with open(f'{save_folder}/parameter.txt', 'a') as f:
-                f.write('image batch:' + str(images.shape)+'\n')
-                f.write('label batch:' + str(labels.shape)+'\n')
+                f.write('targets batch:' + str(targets.shape)+'\n')
+                f.write('inputs batch:' + str(inputs.shape)+'\n')
                 f.write('\n')
-
     def plotchain(self):
         device = self.device
         model = self.model
@@ -430,7 +467,7 @@ class DiffusionModel:
         scheduler.set_timesteps(num_inference_steps=1000)
         with autocast(enabled=True):
             image, intermediates = inferer.sample(
-                input_noise=noise,   diffusion_model=model, scheduler=scheduler, save_intermediates=True, intermediate_steps=100
+                input_noise=noise,   input_image=noise,  diffusion_model=model, scheduler=scheduler, save_intermediates=True, intermediate_steps=100
             )
 
         chain = torch.cat(intermediates, dim=-1)
@@ -472,8 +509,6 @@ if __name__ == "__main__":
     print(torch.cuda.get_device_name(args.GPU_ID))
     train_loader,batch_number,val_loader,train_transforms=setupdata(args)
     logs_name=f'./logs/{args.run_name}'	
-
-
     os.makedirs(logs_name,exist_ok=True)
     if args.mode == "train":
         Diffuser=DiffusionModel(args)
@@ -481,7 +516,7 @@ if __name__ == "__main__":
         Diffuser.train(args,train_loader,batch_number,val_loader)
     elif args.mode == "checkdata":
         #checkdata(train_loader)
-        checkdata(val_loader)
+        checkdata(val_loader,train_transforms)
     elif args.mode == "test":
         Diffuser=DiffusionModel(args)
         #Diffuser.testdata(train_loader=train_loader,output_for_check=1,save_folder='results/test_images')

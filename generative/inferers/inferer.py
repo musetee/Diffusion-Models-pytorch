@@ -311,7 +311,7 @@ class transformDiffusionInferer(Inferer):
     def sample(
         self,
         input_noise: torch.Tensor,
-        orig_image: torch.Tensor,
+        input_image: torch.Tensor,
         diffusion_model: Callable[..., torch.Tensor],
         scheduler: Callable[..., torch.Tensor] | None = None,
         save_intermediates: bool | None = False,
@@ -322,7 +322,7 @@ class transformDiffusionInferer(Inferer):
         """
         Args:
             input_noise: random noise, of the same shape as the desired sample.
-            orig_image: original image that should be to target transformed.
+            input_image: input image that should be to target transformed.
             diffusion_model: model to sample from.
             scheduler: diffusion scheduler. If none provided will use the class attribute scheduler
             save_intermediates: whether to return intermediates along the sampling change
@@ -332,7 +332,7 @@ class transformDiffusionInferer(Inferer):
         """
         if not scheduler:
             scheduler = self.scheduler
-        image = torch.cat((input_noise,orig_image),1)
+        image = torch.cat((input_noise,input_image),1)
         if verbose and has_tqdm:
             progress_bar = tqdm(scheduler.timesteps)
         else:
@@ -348,7 +348,7 @@ class transformDiffusionInferer(Inferer):
             noisy_image = image[:, 0, :, :]
             noisy_image = noisy_image[:,None,:,:]
             image, _ = scheduler.step(model_output, t, noisy_image)
-            image = torch.cat((image,orig_image),1)
+            image = torch.cat((image,input_image),1)
             if save_intermediates and t % intermediate_steps == 0:
                 intermediates.append(image)
         image  = image[:, 0, :, :]
