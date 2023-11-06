@@ -55,8 +55,10 @@ def checkdata(loader,inputtransforms,output_for_check=1,save_folder='./logs/test
     import matplotlib
     matplotlib.use('Qt5Agg')
     for i, batch in enumerate(loader):
-        images = batch["image"]
+        #images = batch["image"]
+        images = batch["label"]
         labels = batch["label"]
+        
         images=images[:,:,:,:,None]
         try:
             volume=torch.cat((volume,images),-1)
@@ -70,7 +72,7 @@ def checkdata(loader,inputtransforms,output_for_check=1,save_folder='./logs/test
     val_output_dict = {"image": volume}
     with allow_missing_keys_mode(inputtransforms):
         reversed_images_dict=inputtransforms.inverse(val_output_dict)
-    images=reversed_images_dict["image"]
+    #images=reversed_images_dict["image"]
 
     for i in range(images.shape[0]):
         print(images.shape)
@@ -94,7 +96,7 @@ def checkdata(loader,inputtransforms,output_for_check=1,save_folder='./logs/test
                             hspace = 0, wspace = 0)
                 plt.margins(0,0)
                 plt.imshow(img, cmap='gray') #.squeeze()
-                plt.savefig(saved_name.replace(f'.{imgformat}',f'_ct.{imgformat}'), format=f'{imgformat}'
+                plt.savefig(saved_name.replace(f'.{imgformat}',f'_reversed.{imgformat}'), format=f'{imgformat}'
                             , bbox_inches='tight', pad_inches=0, dpi=dpi)
                 plt.close(fig_ct)
         '''
