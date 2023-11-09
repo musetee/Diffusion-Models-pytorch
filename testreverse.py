@@ -19,9 +19,9 @@ if __name__ == "__main__":
     '''
     #print the min and max value of the original data
     
-    normalize='zscore'
+    normalize='minmax'
     pad='minimum'
-    train_number=5
+    train_number=1
     val_number=1
     train_batch_size=8
     val_batch_size=1
@@ -89,11 +89,17 @@ if __name__ == "__main__":
             reversed_data=train_transforms.inverse(dict)
         reversed_data=reversed_data["image"]
         print (f"{idx} reversed data shape:",reversed_data.shape) # [1, 565, 338, 20]
+
+        ## reverse the normalization using std and mean
+        if normalize=='zscore':
+            reversed_data = reversed_data*std_list[idx]+mean_list[idx]
+        elif normalize=='minmax':
+            reversed_data = reversed_data*(untransformed_CT_max_list[idx]-untransformed_CT_min_list[idx])+untransformed_CT_min_list[idx]
+
+        ##  rotate the output image
         reversed_data = reversed_data.squeeze().permute(1,0,2) #[452, 315, 104] -> [315, 452, 104]
-
-        # reverse the normalization using std and mean
-        reversed_data = reversed_data*std_list[idx]+mean_list[idx]
-
+        transformed_CT = transformed_CT.squeeze().squeeze().permute(1,0,2) 
+        
         ## compare the min and max value of the original and reversed data
         print(f"{idx} untransformed CT data min and max: {untransformed_CT_min_list[idx]}, {untransformed_CT_max_list[idx]}")
         print(f"{idx} untransformed MRI data min and max: {untransformed_MRI_min_list[idx]}, {untransformed_MRI_max_list[idx]}")
@@ -108,7 +114,7 @@ if __name__ == "__main__":
                 saved_name=os.path.join(save_folder,f"{i}.{imgformat}")
                 
                 ## save original image
-                img_ct = transformed_CT[0,0,:,:,i]
+                img_ct = transformed_CT[:,:,i]
                 fig_ct = plt.figure()
                 plt.gca().set_axis_off()
                 plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0,
@@ -136,16 +142,18 @@ if __name__ == "__main__":
         # Flatten the 3D arrays to 1D arrays to calculate the histogram
         flattened_volume1 = ct_data_list[idx].numpy().flatten()
         flattened_volume2 = reversed_data.numpy().flatten()
+        flattened_volume3 = transformed_CT.numpy().flatten()
         print(flattened_volume1.shape)
         print(flattened_volume2.shape)
 
         # Set up the matplotlib figure and axes
-        fig, axs = plt.subplots(2, 1, figsize=(10, 8))
+        fig, axs = plt.subplots(3, 1, figsize=(10, 8))
 
         # Histogram settings
         bins = 256  # Adjust the number of bins for the histogram as needed
         hist_range1 = (np.min(flattened_volume1), 3000)  # Range based on both volumes np.max(flattened_volume1)
         hist_range2 = (np.min(flattened_volume2), 3000)  # Range based on both volumes np.max(flattened_volume2)
+        hist_range3 = (np.min(flattened_volume3), np.max(flattened_volume3))  # Range based on both volumes np.max(flattened_volume2)
         # Plot histogram for the first volume
         axs[0].hist(flattened_volume1, bins=bins, range=hist_range1, color='blue', alpha=0.7)
         axs[0].set_title('Histogram of Pixel Intensities for original CT image')
@@ -157,6 +165,12 @@ if __name__ == "__main__":
         axs[1].set_title('Histogram of Pixel Intensities for reversed CT image')
         axs[1].set_xlabel('Pixel intensity')
         axs[1].set_ylabel('Frequency')
+
+        # Plot histogram for the third  volume
+        axs[2].hist(flattened_volume3, bins=bins, range=hist_range3, color='red', alpha=0.7)
+        axs[2].set_title('Histogram of Pixel Intensities for transformed CT image')
+        axs[2].set_xlabel('Pixel intensity')
+        axs[2].set_ylabel('Frequency')
 
         # Adjust layout for better spacing
         plt.tight_layout()
