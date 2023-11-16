@@ -48,7 +48,8 @@ def setupdata(args):
                     center_crop=args.center_crop,
                     ifcheck_volume=False,
                     ifcheck_sclices=False,)
-    slice_number,batch_number =len_patchloader(train_volume_ds,args.batch_size)
+    #slice_number,batch_number =len_patchloader(train_volume_ds,args.batch_size)
+    batch_number = 10000
     return train_loader,batch_number,val_loader,train_transforms
 def checkdata(loader,inputtransforms,output_for_check=1,save_folder='./logs/test_images'):
     from PIL import Image
@@ -206,11 +207,14 @@ class DiffusionModel:
             total_start = time.time()
             for continue_epoch in range(n_epochs):
                 epoch = continue_epoch + init_epoch + 1
+                epoch_num_total = n_epochs + init_epoch
+                print("-" * 10)
+                print(f"epoch {epoch}/{epoch_num_total}")
                 model.train()
                 epoch_loss = 0
                 progress_bar = tqdm(enumerate(train_loader), total=batch_number, ncols=70)
                 progress_bar.set_description(f"Epoch {epoch}")
-                for step, batch in progress_bar:
+                for step, batch in enumerate(train_loader): #progress_bar
                     images = batch["image"].to(device) # CT image
                     labels = batch["label"].to(device) # MRI image
                     optimizer.zero_grad(set_to_none=True)
