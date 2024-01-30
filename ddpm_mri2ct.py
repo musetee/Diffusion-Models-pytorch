@@ -347,45 +347,46 @@ class DiffusionModel:
         mae_sum = 0
         metric_sum=0
         for step, batch in enumerate(val_loader):
-            print(step)
-            targets = batch["image"].to(device) # CT image
-            inputs = batch["label"].to(device) # MRI image
-            print("original image shape:", targets.shape)
-            image_loss, generated_image,orig_image = self._sample(model=model, 
-                                                                targets=targets, 
-                                                                inputs=inputs, 
-                                                                inferer=inferer,
-                                                                scheduler=scheduler,
-                                                                epoch=epoch, step=step, 
-                                                                device=device, i=0,
-                                                                save_imgs=True) # 0 because val_loader batch_size=1
-            val_metrices, infer_log_file = val_log(epoch, step, generated_image, orig_image, self.saved_logs_name)
-            #if val_metrices['ssim']>0.3:
-            ssim_sum = ssim_sum + val_metrices['ssim']
-            psnr_sum = psnr_sum + val_metrices['psnr']
-            mae_sum = mae_sum + val_metrices['mae'] 
-            ssim_overall = ssim_sum / (step + 1)
-            psnr_overall = psnr_sum / (step + 1)
-            mae_overall = mae_sum / (step + 1)
-            print("ssim_overall:", ssim_overall)
-            print("psnr_overall:", psnr_overall)
-            print("mae_overall:", mae_overall)
-            with open(infer_log_file, 'a') as f: # append mode
-                f.write(f'over all metrices, SSIM: {ssim_overall}, MAE: {mae_overall}, PSNR: {psnr_overall}\n')
-           
-            print("img_epoch_loss", image_loss)
+            if step >50 and step <55:
+                print(step)
+                targets = batch["image"].to(device) # CT image
+                inputs = batch["label"].to(device) # MRI image
+                print("original image shape:", targets.shape)
+                image_loss, generated_image,orig_image = self._sample(model=model, 
+                                                                    targets=targets, 
+                                                                    inputs=inputs, 
+                                                                    inferer=inferer,
+                                                                    scheduler=scheduler,
+                                                                    epoch=epoch, step=step, 
+                                                                    device=device, i=0,
+                                                                    save_imgs=True) # 0 because val_loader batch_size=1
+                val_metrices, infer_log_file = val_log(epoch, step, generated_image, orig_image, self.saved_logs_name)
+                #if val_metrices['ssim']>0.3:
+                ssim_sum = ssim_sum + val_metrices['ssim']
+                psnr_sum = psnr_sum + val_metrices['psnr']
+                mae_sum = mae_sum + val_metrices['mae'] 
+                ssim_overall = ssim_sum / (step + 1)
+                psnr_overall = psnr_sum / (step + 1)
+                mae_overall = mae_sum / (step + 1)
+                print("ssim_overall:", ssim_overall)
+                print("psnr_overall:", psnr_overall)
+                print("mae_overall:", mae_overall)
+                with open(infer_log_file, 'a') as f: # append mode
+                    f.write(f'over all metrices, SSIM: {ssim_overall}, MAE: {mae_overall}, PSNR: {psnr_overall}\n')
+            
+                print("img_epoch_loss", image_loss)
 
-            print("generated image shape:", generated_image.shape)
-           
-            generated_image=generated_image.unsqueeze(-1)
-            print("unsqueezed image shape:", generated_image.shape)
-            image_losses.append(image_loss)
-            try:
-                image_volume=torch.cat((image_volume,generated_image),-1)#pay attention to the order!
-            except:
-                image_volume=generated_image
+                print("generated image shape:", generated_image.shape)
+            
+                generated_image=generated_image.unsqueeze(-1)
+                print("unsqueezed image shape:", generated_image.shape)
+                image_losses.append(image_loss)
+                try:
+                    image_volume=torch.cat((image_volume,generated_image),-1)#pay attention to the order!
+                except:
+                    image_volume=generated_image
         
-        reversed_image = reverse_transforms(output_images=image_volume, 
+            reversed_image = reverse_transforms(output_images=image_volume, 
                                             orig_images=inputs, # output reverse should according to the original inputs MRI
                                             transforms=val_transforms) 
         
@@ -492,7 +493,7 @@ if __name__ == "__main__":
     parser.add_argument("--normalize", type=str, default="minmax")
     parser.add_argument("--pad", type=str, default="minimum")
     parser.add_argument("--val_number", type=int, default=1)
-    parser.add_argument("--center_crop", type=int, default=20) # set to 0 or -1 means no cropping
+    parser.add_argument("--center_crop", type=int, default=0) # set to 0 or -1 means no cropping
     parser.add_argument("--batch_size", type=int, default=2)
     parser.add_argument("--image_size", type=int, default=512)
     parser.add_argument("--pretrained_path", type=str, default=None)

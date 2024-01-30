@@ -62,7 +62,7 @@ normalization_methods = {
 
 
 # Other settings
-dataset_path = r"E:\Projects\yang_proj\Task1\pelvis"
+dataset_path = r"D:\Projects\data\Task1\pelvis" #"E:\Projects\yang_proj\Task1\pelvis"
 normalize = 'minmax'
 pad = 'minimum'
 train_number = 1
